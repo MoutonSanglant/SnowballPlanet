@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
@@ -22,6 +23,8 @@ namespace SnowballPlanet
         private Vector3 _previousPosition;
         private Vector3 _previousForward;
         private bool _alignCamera;
+
+        public Action<Vector2> OnControllerMove = moveAmount => { };
 
         // Cache
         private Rigidbody _rigidbody;
@@ -84,6 +87,8 @@ namespace SnowballPlanet
         public void OnMove(InputAction.CallbackContext context)
         {
             _moveAmount = context.ReadValue<Vector2>();
+
+            OnControllerMove.Invoke(_moveAmount);
         }
         #endregion UnityEvents
 

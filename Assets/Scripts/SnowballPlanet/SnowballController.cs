@@ -69,7 +69,7 @@ namespace SnowballPlanet
             parentConstraint.translationAtRest = transform.position;
             parentConstraint.rotationAtRest = transform.rotation.eulerAngles;
             parentConstraint.SetRotationOffset(0, (item.transform.rotation * Quaternion.Inverse(_snowballRollTransform.rotation)).eulerAngles);
-            parentConstraint.SetTranslationOffset(0,  _snowballRollTransform.InverseTransformPoint(item.transform.position));
+            parentConstraint.SetTranslationOffset(0,  _snowballRollTransform.InverseTransformPoint(item.transform.position) * _snowballRollTransform.transform.lossyScale.x);
             parentConstraint.constraintActive = true;
 
             _growthEndTime = Time.time + GrowthSpeed;

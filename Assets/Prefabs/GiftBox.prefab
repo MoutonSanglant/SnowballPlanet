@@ -260,6 +260,7 @@ GameObject:
   - component: {fileID: 6991999357102328665}
   - component: {fileID: 3404862976369064008}
   - component: {fileID: 5908320995481603549}
+  - component: {fileID: 4669249525432487299}
   m_Layer: 0
   m_Name: Gift box
   m_TagString: Untagged
@@ -332,6 +333,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &4669249525432487299
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5144055460550561932}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.0042724987, y: 0.0042725, z: 0.004000001}
+  m_Center: {x: 0, y: 2.842171e-17, z: 0.0020000006}
 --- !u!1001 &8569269805062769800
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -393,7 +415,7 @@ PrefabInstance:
     - target: {fileID: 7651922634588568571, guid: 3b335d70c708428edace824c65eb7937,
         type: 3}
       propertyPath: m_Name
-      value: OrbitalElement Variant
+      value: GiftBox
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -414,8 +436,59 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 8400935963287340684}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7651922634588568571, guid: 3b335d70c708428edace824c65eb7937,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -8920633448056073459}
+    - targetCorrespondingSourceObject: {fileID: 7651922634588568571, guid: 3b335d70c708428edace824c65eb7937,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5962431917668243019}
   m_SourcePrefab: {fileID: 100100000, guid: 3b335d70c708428edace824c65eb7937, type: 3}
+--- !u!1 &2079887203882989427 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7651922634588568571, guid: 3b335d70c708428edace824c65eb7937,
+    type: 3}
+  m_PrefabInstance: {fileID: 8569269805062769800}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &-8920633448056073459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2079887203882989427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7db070f549ad667db835f9eba70126f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <PickSize>k__BackingField: 1
+  <GrowthAmount>k__BackingField: 1
+--- !u!1773428102 &5962431917668243019
+ParentConstraint:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2079887203882989427}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Weight: 1
+  m_TranslationAtRest: {x: -4.14, y: 10.1, z: 0.282}
+  m_RotationAtRest: {x: 0, y: 0, z: 0}
+  m_TranslationOffsets: []
+  m_RotationOffsets: []
+  m_AffectTranslationX: 1
+  m_AffectTranslationY: 1
+  m_AffectTranslationZ: 1
+  m_AffectRotationX: 1
+  m_AffectRotationY: 1
+  m_AffectRotationZ: 1
+  m_Active: 0
+  m_IsLocked: 0
+  m_Sources: []
 --- !u!4 &4844580148773633855 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3879655941950469047, guid: 3b335d70c708428edace824c65eb7937,

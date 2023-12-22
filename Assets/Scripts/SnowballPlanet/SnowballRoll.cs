@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 namespace SnowballPlanet
@@ -13,8 +14,9 @@ namespace SnowballPlanet
         {
             _parent = transform.parent;
 
-            GetComponentInParent<ThirdPersonOrbitalController>().OnControllerMove +=
-                moveAmount => { _rollAmount = moveAmount; };
+            var controller = GetComponentInParent<ThirdPersonOrbitalController>();
+
+            controller.OnControllerMove += moveAmount => { _rollAmount = moveAmount; };
         }
 
         private void Update()

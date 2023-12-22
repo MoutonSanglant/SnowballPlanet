@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 namespace SnowballPlanet
 {
@@ -11,10 +10,12 @@ namespace SnowballPlanet
     /// <see cref="https://en.wikipedia.org/wiki/Spherical_coordinate_system"/>
     public class ThirdPersonOrbitalController : MonoBehaviour
     {
-        [Tooltip("The origin of the spherical coordinate system")]
-        [SerializeField] private Transform OrbitCenter;
-        [Tooltip("The radial distance from the origin of the controller")]
-        [SerializeField] private float Radius = 1f;
+        [Tooltip("The origin of the spherical coordinate system")] [SerializeField]
+        private Transform OrbitCenter;
+
+        [Tooltip("The radial distance from the origin of the controller")] [SerializeField]
+        private float Radius = 1f;
+
         [SerializeField] private float MovementSpeed = 1f;
         [SerializeField] private float RotationSpeed = 1f;
 

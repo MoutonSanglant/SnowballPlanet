@@ -6,6 +6,7 @@ namespace SnowballPlanet
 {
     public class SnowballController : ThirdPersonOrbitalController
     {
+        [SerializeField] private PlanetInfo TargetPlanet;
         [SerializeField] private float GrowthSpeed = 0.4f;
 
         private Coroutine _growCoroutine;
@@ -20,7 +21,7 @@ namespace SnowballPlanet
         private ParentConstraint _mainCameraConstraint;
         private ThirdPersonOrbitalController _orbitalController;
 
-        private void Start()
+        protected override void Awake()
         {
             _mainCameraConstraint = Camera.main.GetComponent<ParentConstraint>();
             _snowballRollTransform = GetComponentInChildren<SnowballRoll>().transform;
@@ -30,7 +31,12 @@ namespace SnowballPlanet
             _baseSize = _size;
             _cameraOffset = _mainCameraConstraint.GetTranslationOffset(0);
             _baseCameraOffset = _cameraOffset.y;
-            _baseOrbitRadiusOffset = _orbitalController.Radius;
+            _baseOrbitRadiusOffset = TargetPlanet.Radius;
+
+            orbitCenter = TargetPlanet.transform;
+            orbitRadius = TargetPlanet.Radius;
+
+            base.Awake();
         }
 
         private IEnumerator Grow()
@@ -39,7 +45,7 @@ namespace SnowballPlanet
             var currentTime = growthStartTime;
             var lastScale = transform.localScale;
             var lastCameraOffset = _cameraOffset.y;
-            var lastOrbitRadiusOffset = _orbitalController.Radius;
+            var lastOrbitRadiusOffset = orbitRadius;
 
             while (currentTime < _growthEndTime)
             {
@@ -47,7 +53,7 @@ namespace SnowballPlanet
                 var elapsed = Mathf.InverseLerp(growthStartTime, _growthEndTime, currentTime);
                 transform.localScale = Vector3.Lerp(lastScale, Vector3.one * _size, elapsed);
                 _cameraOffset.y = Mathf.Lerp(lastCameraOffset, _baseCameraOffset + (_size - _baseSize) * 2, elapsed);
-                _orbitalController.Radius = Mathf.Lerp(lastOrbitRadiusOffset, _baseOrbitRadiusOffset + (_size - _baseSize), elapsed);
+                orbitRadius = Mathf.Lerp(lastOrbitRadiusOffset, _baseOrbitRadiusOffset + (_size - _baseSize), elapsed);
                 _mainCameraConstraint.SetTranslationOffset(0, _cameraOffset);
 
                 yield return null;

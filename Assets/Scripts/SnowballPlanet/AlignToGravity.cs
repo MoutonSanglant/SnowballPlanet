@@ -4,12 +4,22 @@ namespace SnowballPlanet
 {
     public class AlignToGravity : MonoBehaviour
     {
-        [Tooltip("The origin of the spherical coordinate system")]
-        [SerializeField] private Transform OrbitCenter;
+        [field: SerializeField] public PlanetInfo Planet { get; private set; }
 
         private void Awake()
         {
-            transform.up = (transform.position - OrbitCenter.position).normalized;
+            if (Planet == null)
+                Planet = GetComponentInParent<PlanetInfo>();
+
+            transform.up = (transform.position - Planet.transform.position).normalized;
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            if (Planet == null)
+                return;
+
+            transform.up = (transform.position - Planet.transform.position).normalized;
         }
     }
 }

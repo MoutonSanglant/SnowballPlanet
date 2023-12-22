@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace SnowballPlanet
 {
@@ -10,14 +11,12 @@ namespace SnowballPlanet
     /// <see cref="https://en.wikipedia.org/wiki/Spherical_coordinate_system"/>
     public class ThirdPersonOrbitalController : MonoBehaviour
     {
-        [Tooltip("The origin of the spherical coordinate system")] [SerializeField]
-        private Transform OrbitCenter;
-
-        [Tooltip("The radial distance from the origin of the controller")] [SerializeField]
-        public float Radius = 1f;
 
         [SerializeField] private float MovementSpeed = 1f;
         [SerializeField] private float RotationSpeed = 1f;
+
+        protected Transform orbitCenter;
+        protected float orbitRadius = 1f;
 
         private Vector2 _moveAmount;
         private float _lastMoveAmountY;
@@ -31,7 +30,7 @@ namespace SnowballPlanet
         private Rigidbody _rigidbody;
 
         #region UnityEvents
-        private void Awake()
+        protected virtual void Awake()
         {
             _rigidbody = GetComponent<Rigidbody>();
             _previousPosition = _rigidbody.position - transform.forward;
@@ -39,7 +38,7 @@ namespace SnowballPlanet
 
         private void FixedUpdate()
         {
-            var upward = (transform.position - OrbitCenter.position).normalized;
+            var upward = (transform.position - orbitCenter.position).normalized;
             var forward = transform.forward;
 
             if (_moveAmount.y > 0f)
@@ -77,7 +76,7 @@ namespace SnowballPlanet
             var desiredPosition = _rigidbody.position + forward * (_moveAmount.y * Time.fixedDeltaTime * MovementSpeed);
 
             CartesianToSpherical(desiredPosition, out var radius, out var polar, out var elevation);
-            SphericalToCartesian(Radius, polar, elevation, out var cartesianCoordinates);
+            SphericalToCartesian(orbitRadius, polar, elevation, out var cartesianCoordinates);
 
             _rigidbody.Move(cartesianCoordinates, Quaternion.LookRotation(forward, upward));
             _previousForward = transform.forward;

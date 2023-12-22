@@ -13,18 +13,22 @@ namespace SnowballPlanet
         private float _size;
         private float _baseCameraOffset;
         private Vector3 _cameraOffset;
+        private float _baseOrbitRadiusOffset;
 
         private Transform _snowballRollTransform;
         private ParentConstraint _mainCameraConstraint;
+        private ThirdPersonOrbitalController _orbitalController;
 
         private void Start()
         {
             _mainCameraConstraint = Camera.main.GetComponent<ParentConstraint>();
             _snowballRollTransform = GetComponentInChildren<SnowballRoll>().transform;
+            _orbitalController = GetComponentInParent<ThirdPersonOrbitalController>();
 
             _size = transform.localScale.x;
             _cameraOffset = _mainCameraConstraint.GetTranslationOffset(0);
             _baseCameraOffset = _cameraOffset.y;
+            _baseOrbitRadiusOffset = _orbitalController.Radius;
         }
 
         private IEnumerator Grow()
@@ -32,14 +36,16 @@ namespace SnowballPlanet
             var growthStartTime = Time.time;
             var currentTime = growthStartTime;
             var lastScale = transform.localScale;
-            var lastOffset = _cameraOffset.y;
+            var lastCameraOffset = _cameraOffset.y;
+            var lastOrbitRadiusOffset = _orbitalController.Radius;
 
             while (currentTime < _growthEndTime)
             {
                 currentTime += Time.deltaTime;
                 var elapsed = Mathf.InverseLerp(growthStartTime, _growthEndTime, currentTime);
                 transform.localScale = Vector3.Lerp(lastScale, Vector3.one * _size, elapsed);
-                _cameraOffset.y = Mathf.Lerp(lastOffset, _baseCameraOffset - (1f -_size * 2), elapsed);
+                _cameraOffset.y = Mathf.Lerp(lastCameraOffset, _baseCameraOffset - (1f -_size * 2), elapsed);
+                _orbitalController.Radius = Mathf.Lerp(lastOrbitRadiusOffset, _baseOrbitRadiusOffset - (1f - _size), elapsed);
                 _mainCameraConstraint.SetTranslationOffset(0, _cameraOffset);
 
                 yield return null;

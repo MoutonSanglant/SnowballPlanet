@@ -14,7 +14,7 @@ namespace SnowballPlanet
         private Transform OrbitCenter;
 
         [Tooltip("The radial distance from the origin of the controller")] [SerializeField]
-        private float Radius = 1f;
+        public float Radius = 1f;
 
         [SerializeField] private float MovementSpeed = 1f;
         [SerializeField] private float RotationSpeed = 1f;

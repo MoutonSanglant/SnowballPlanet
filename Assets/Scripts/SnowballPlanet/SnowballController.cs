@@ -10,6 +10,7 @@ namespace SnowballPlanet
 
         private Coroutine _growCoroutine;
         private float _growthEndTime;
+        private float _baseSize;
         private float _size;
         private float _baseCameraOffset;
         private Vector3 _cameraOffset;
@@ -26,6 +27,7 @@ namespace SnowballPlanet
             _orbitalController = GetComponentInParent<ThirdPersonOrbitalController>();
 
             _size = transform.localScale.x;
+            _baseSize = _size;
             _cameraOffset = _mainCameraConstraint.GetTranslationOffset(0);
             _baseCameraOffset = _cameraOffset.y;
             _baseOrbitRadiusOffset = _orbitalController.Radius;
@@ -44,8 +46,8 @@ namespace SnowballPlanet
                 currentTime += Time.deltaTime;
                 var elapsed = Mathf.InverseLerp(growthStartTime, _growthEndTime, currentTime);
                 transform.localScale = Vector3.Lerp(lastScale, Vector3.one * _size, elapsed);
-                _cameraOffset.y = Mathf.Lerp(lastCameraOffset, _baseCameraOffset - (1f -_size * 2), elapsed);
-                _orbitalController.Radius = Mathf.Lerp(lastOrbitRadiusOffset, _baseOrbitRadiusOffset - (1f - _size), elapsed);
+                _cameraOffset.y = Mathf.Lerp(lastCameraOffset, _baseCameraOffset + (_size - _baseSize) * 2, elapsed);
+                _orbitalController.Radius = Mathf.Lerp(lastOrbitRadiusOffset, _baseOrbitRadiusOffset + (_size - _baseSize), elapsed);
                 _mainCameraConstraint.SetTranslationOffset(0, _cameraOffset);
 
                 yield return null;

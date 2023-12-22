@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace SnowballPlanet
 {
-    public class PropOrbitalPosition : MonoBehaviour
+    public class AlignToGravity : MonoBehaviour
     {
         [Tooltip("The origin of the spherical coordinate system")]
         [SerializeField] private Transform OrbitCenter;

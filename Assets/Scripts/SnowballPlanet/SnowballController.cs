@@ -1,12 +1,15 @@
 using System;
 using System.Collections;
+using Eflatun.SceneReference;
 using UnityEngine;
 using UnityEngine.Animations;
+using UnityEngine.SceneManagement;
 
 namespace SnowballPlanet
 {
     public class SnowballController : ThirdPersonOrbitalController
     {
+        [SerializeField] private SceneReference CreditsScene;
         [SerializeField] private PlanetInfo TargetPlanet;
         [SerializeField] private float GrowthSpeed = 0.4f;
 
@@ -22,13 +25,11 @@ namespace SnowballPlanet
 
         private Transform _snowballRollTransform;
         private ParentConstraint _mainCameraConstraint;
-        private ThirdPersonOrbitalController _orbitalController;
 
         protected override void Awake()
         {
             _mainCameraConstraint = Camera.main.GetComponent<ParentConstraint>();
             _snowballRollTransform = GetComponentInChildren<SnowballRoll>().transform;
-            _orbitalController = GetComponentInParent<ThirdPersonOrbitalController>();
 
             _size = transform.localScale.x;
             _baseSize = _size;
@@ -73,6 +74,15 @@ namespace SnowballPlanet
             _growCoroutine = null;
         }
 
+        private IEnumerator DisplayVictoryAndStartLoadCredits()
+        {
+            Locked = true;
+
+            yield return new WaitForSeconds(5f);
+
+            SceneManager.LoadScene(CreditsScene.BuildIndex);
+        }
+
         private void PickUpItem(PickableItem item)
         {
             var parentConstraint = item.GetComponent<ParentConstraint>();
@@ -93,6 +103,9 @@ namespace SnowballPlanet
 
             if (_growCoroutine == null)
                 _growCoroutine = StartCoroutine(Grow());
+
+            if (item.IsGoal)
+                StartCoroutine(DisplayVictoryAndStartLoadCredits());
         }
 
         #region PhysicEvents

@@ -11,7 +11,6 @@ namespace SnowballPlanet
     /// <see cref="https://en.wikipedia.org/wiki/Spherical_coordinate_system"/>
     public class ThirdPersonOrbitalController : MonoBehaviour
     {
-
         [SerializeField] private float MovementSpeed = 1f;
         [SerializeField] private float RotationSpeed = 1f;
 
@@ -23,8 +22,23 @@ namespace SnowballPlanet
         private Vector3 _previousPosition;
         private Vector3 _previousForward;
         private bool _alignCamera;
+        private bool _locked;
 
         public Action<Vector2> OnControllerMove = moveAmount => { };
+
+        protected bool Locked
+        {
+            get
+            {
+                return _locked;
+            }
+            set
+            {
+                _locked = value;
+                _moveAmount = value ? Vector2.zero : _moveAmount;
+                OnControllerMove.Invoke(_moveAmount);
+            }
+        }
 
         // Cache
         private Rigidbody _rigidbody;
@@ -86,7 +100,7 @@ namespace SnowballPlanet
         #region InputsEvents
         public void OnMove(InputAction.CallbackContext context)
         {
-            _moveAmount = context.ReadValue<Vector2>();
+            _moveAmount = Locked ? Vector2.zero : context.ReadValue<Vector2>();
 
             OnControllerMove.Invoke(_moveAmount);
         }

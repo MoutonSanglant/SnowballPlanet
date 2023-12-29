@@ -1080,6 +1080,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MovementSpeed: 7
   RotationSpeed: 90
+  CreditsScene:
+    asset: {fileID: 102900000, guid: 45627a939b646d442974f26375a5624f, type: 3}
+    guid: 45627a939b646d442974f26375a5624f
   TargetPlanet: {fileID: 674669195}
   GrowthSpeed: 0.4
 --- !u!135 &503661195

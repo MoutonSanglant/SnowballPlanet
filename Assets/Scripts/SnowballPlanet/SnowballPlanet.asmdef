@@ -2,7 +2,8 @@
     "name": "SnowballPlanet",
     "rootNamespace": "",
     "references": [
-        "GUID:75469ad4d38634e559750d17036d5f7c"
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:caca889fed6088d40b22c2d7e2909c31"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

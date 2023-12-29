@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Animations;
@@ -8,6 +9,8 @@ namespace SnowballPlanet
     {
         [SerializeField] private PlanetInfo TargetPlanet;
         [SerializeField] private float GrowthSpeed = 0.4f;
+
+        public Action<float> OnSnowballGrow;
 
         private Coroutine _growCoroutine;
         private float _growthEndTime;
@@ -39,6 +42,11 @@ namespace SnowballPlanet
             base.Awake();
         }
 
+        private void Start()
+        {
+            OnSnowballGrow.Invoke(_size);
+        }
+
         private IEnumerator Grow()
         {
             var growthStartTime = Time.time;
@@ -55,11 +63,13 @@ namespace SnowballPlanet
                 _cameraOffset.y = Mathf.Lerp(lastCameraOffset, _baseCameraOffset + (_size - _baseSize) * 2, elapsed);
                 orbitRadius = Mathf.Lerp(lastOrbitRadiusOffset, _baseOrbitRadiusOffset + (_size - _baseSize), elapsed);
                 _mainCameraConstraint.SetTranslationOffset(0, _cameraOffset);
+                OnSnowballGrow.Invoke(_size);
 
                 yield return null;
             }
 
             transform.localScale = Vector3.one * _size;
+            OnSnowballGrow.Invoke(_size);
             _growCoroutine = null;
         }
 

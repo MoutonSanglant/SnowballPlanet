@@ -78,10 +78,15 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4252753052488640409, guid: 68e00ca5161343a41b5c1777fb93b777,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 5649965332561270630, guid: 68e00ca5161343a41b5c1777fb93b777,
         type: 3}
       propertyPath: m_Name
-      value: Snowball (2cm) Variant
+      value: Big Snowball (60cm) Variant
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

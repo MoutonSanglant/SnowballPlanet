@@ -11,7 +11,7 @@ PrefabInstance:
     - target: {fileID: 847526083129775305, guid: 9ae1dbcf076a5dbb492043f3762e4ccf,
         type: 3}
       propertyPath: m_Name
-      value: Snowball Variant
+      value: Snowball (20cm)
       objectReference: {fileID: 0}
     - target: {fileID: 6063355713047551109, guid: 9ae1dbcf076a5dbb492043f3762e4ccf,
         type: 3}

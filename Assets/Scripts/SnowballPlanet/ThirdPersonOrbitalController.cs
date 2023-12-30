@@ -42,10 +42,12 @@ namespace SnowballPlanet
 
         // Cache
         private Rigidbody _rigidbody;
+        private int _collisionMask;
 
         #region UnityEvents
         protected virtual void Awake()
         {
+            _collisionMask = LayerMask.GetMask("Colliders");
             _rigidbody = GetComponent<Rigidbody>();
             _previousPosition = _rigidbody.position - transform.forward;
         }
@@ -88,6 +90,28 @@ namespace SnowballPlanet
             forward = Quaternion.AngleAxis(_moveAmount.x * Time.fixedDeltaTime * RotationSpeed, upward) * forward;
 
             var desiredPosition = _rigidbody.position + forward * (_moveAmount.y * Time.fixedDeltaTime * MovementSpeed);
+            var direction = (desiredPosition - transform.position).normalized;
+
+            // Manual collision check
+            var hits = Physics.RaycastAll(transform.position, direction, transform.localScale.x * 0.9f, _collisionMask);
+
+            if (hits.Length > 0)
+            {
+                foreach (var hit in hits)
+                {
+                    var item = hit.transform.GetComponentInParent<PickableItem>();
+
+                    if (item && transform.localScale.x > item.PickSize)
+                        continue;
+
+                    desiredPosition = hit.point + hit.normal * (transform.localScale.x * 0.9f * 0.5f);
+
+                    // Prevents the camera to turn
+                    _lastMoveAmountY = 0;
+
+                    break;
+                }
+            }
 
             CartesianToSpherical(desiredPosition, out var radius, out var polar, out var elevation);
             SphericalToCartesian(orbitRadius, polar, elevation, out var cartesianCoordinates);

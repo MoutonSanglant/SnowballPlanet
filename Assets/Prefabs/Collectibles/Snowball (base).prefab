@@ -21,7 +21,7 @@ PrefabInstance:
     - target: {fileID: 2079887203882989427, guid: 574e39f871405f59cb7af6fbd34a1209,
         type: 3}
       propertyPath: m_Name
-      value: Snowball
+      value: Snowball (base)
       objectReference: {fileID: 0}
     - target: {fileID: 4844580148773633855, guid: 574e39f871405f59cb7af6fbd34a1209,
         type: 3}
@@ -175,6 +175,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: snowball
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: d19fe1933f674232a9c0073861b3b54f,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

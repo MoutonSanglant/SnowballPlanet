@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7540255448865111267}
   - component: {fileID: 4569927565983820558}
   - component: {fileID: 4394855287001273592}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Ribon (center)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 6608700493052943265}
   - component: {fileID: 4106379144750800194}
   - component: {fileID: 4125444071420640253}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Ribon (left)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -177,7 +177,7 @@ GameObject:
   - component: {fileID: 1424213705452187724}
   - component: {fileID: 1439178717278831195}
   - component: {fileID: 7754542625770027096}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Ribon (right)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -261,7 +261,7 @@ GameObject:
   - component: {fileID: 3465018597998885197}
   - component: {fileID: 2357569255014913237}
   - component: {fileID: 2851560076460852067}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Gift box
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -365,7 +365,7 @@ PrefabInstance:
     - target: {fileID: 2079887203882989427, guid: 574e39f871405f59cb7af6fbd34a1209,
         type: 3}
       propertyPath: m_Name
-      value: GiftBox
+      value: GiftBox (base)
       objectReference: {fileID: 0}
     - target: {fileID: 4844580148773633855, guid: 574e39f871405f59cb7af6fbd34a1209,
         type: 3}

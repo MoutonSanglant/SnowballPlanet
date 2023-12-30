@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3879655941950469047}
   - component: {fileID: 5608267042051423647}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: OrbitalElement
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44,4 +44,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78ce8e8a63f4711dea178c00faf4ec47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OrbitCenter: {fileID: 0}
+  <Planet>k__BackingField: {fileID: 0}

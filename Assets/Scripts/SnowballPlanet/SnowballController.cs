@@ -51,7 +51,7 @@ namespace SnowballPlanet
 
         private void Start()
         {
-            OnSnowballGrow.Invoke(_size);
+            OnSnowballGrow.Invoke(transform.localScale.x);
         }
 
         private float growthStartTime;
@@ -93,7 +93,7 @@ namespace SnowballPlanet
                 _mainCameraConstraint.SetTranslationOffset(0, _cameraTranslationOffset);
                 _mainCameraConstraint.SetRotationOffset(0, _cameraRotationOffset);
 
-                OnSnowballGrow.Invoke(_size);
+                OnSnowballGrow.Invoke(transform.localScale.x);
             }
 
             base.FixedUpdate();

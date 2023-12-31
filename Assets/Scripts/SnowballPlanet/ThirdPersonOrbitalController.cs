@@ -101,7 +101,7 @@ namespace SnowballPlanet
                 {
                     var item = hit.transform.GetComponentInParent<PickableItem>();
 
-                    if (item && transform.localScale.x > item.PickSize)
+                    if (item && transform.localScale.x >= item.PickSize * 0.5f)
                         continue;
 
                     desiredPosition = hit.point + hit.normal * (transform.localScale.x * 0.9f * 0.5f);

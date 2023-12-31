@@ -113,7 +113,7 @@ namespace SnowballPlanet
         {
             var item = other.gameObject.GetComponentInParent<PickableItem>();
 
-            if (item && _size > item.PickSize)
+            if (item && _size >= item.PickSize * 0.5f)
                 PickUpItem(item);
         }
         #endregion PhysicEvents

@@ -119,9 +119,6 @@ namespace SnowballPlanet
 
             item.GetComponentInChildren<BoxCollider>().enabled = false;
             parentConstraint.AddSource(new ConstraintSource { sourceTransform = _snowballRollTransform, weight = 1 });
-
-            transform.position += (_snowballRollTransform.position - transform.position) * 0.8f;
-
             parentConstraint.translationAtRest = transform.position;
             parentConstraint.rotationAtRest = transform.rotation.eulerAngles;
             parentConstraint.SetRotationOffset(0, (item.transform.rotation * Quaternion.Inverse(_snowballRollTransform.rotation)).eulerAngles);

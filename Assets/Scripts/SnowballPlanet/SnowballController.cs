@@ -130,7 +130,7 @@ namespace SnowballPlanet
             parentConstraint.constraintActive = true;
 
             _growthEndTime = Time.time + GrowthSpeed;
-            _size += item.GrowthAmount;
+            _size += item.GrowthAmount * 0.5f;
 
             if (!_growing)
             {

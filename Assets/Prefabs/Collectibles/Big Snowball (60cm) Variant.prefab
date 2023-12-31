@@ -88,6 +88,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Big Snowball (60cm) Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 6234671597796668184, guid: 68e00ca5161343a41b5c1777fb93b777,
+        type: 3}
+      propertyPath: <PickSize>k__BackingField
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6234671597796668184, guid: 68e00ca5161343a41b5c1777fb93b777,
+        type: 3}
+      propertyPath: <GrowthAmount>k__BackingField
+      value: 0.1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

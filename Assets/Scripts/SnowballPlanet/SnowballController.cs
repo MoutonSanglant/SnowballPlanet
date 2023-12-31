@@ -26,6 +26,12 @@ namespace SnowballPlanet
         private Vector3 _baseCameraRotationOffset;
         private Vector3 _cameraRotationOffset;
         private float _baseOrbitRadiusOffset;
+        private float _growthStartTime;
+        private float _currentTime;
+        private Vector3 _lastScale;
+        private Vector3 _lastCameraTranslationOffset;
+        private Vector3 _lastCameraRotationOffset;
+        private float _lastOrbitRadiusOffset;
 
         private Transform _snowballRollTransform;
         private ParentConstraint _mainCameraConstraint;
@@ -54,42 +60,35 @@ namespace SnowballPlanet
             OnSnowballGrow.Invoke(transform.localScale.x);
         }
 
-        private float growthStartTime;
-        private float currentTime;
-        private Vector3 lastScale;
-        private Vector3 lastCameraTranslationOffset;
-        private Vector3 lastCameraRotationOffset;
-        private float lastOrbitRadiusOffset;
-
         protected override void FixedUpdate()
         {
             if (_startGrow)
             {
-                 growthStartTime = Time.time;
-                 currentTime = growthStartTime;
-                 lastScale = transform.localScale;
-                 lastCameraTranslationOffset = _cameraTranslationOffset;
-                 lastCameraRotationOffset = _cameraRotationOffset;
-                 lastOrbitRadiusOffset = orbitRadius;
+                 _growthStartTime = Time.time;
+                 _currentTime = _growthStartTime;
+                 _lastScale = transform.localScale;
+                 _lastCameraTranslationOffset = _cameraTranslationOffset;
+                 _lastCameraRotationOffset = _cameraRotationOffset;
+                 _lastOrbitRadiusOffset = orbitRadius;
                  _startGrow = false;
             }
 
             if (_growing)
             {
-                currentTime += Time.fixedDeltaTime;
-                var elapsed = Mathf.InverseLerp(growthStartTime, _growthEndTime, currentTime);
+                _currentTime += Time.fixedDeltaTime;
+                var elapsed = Mathf.InverseLerp(_growthStartTime, _growthEndTime, _currentTime);
 
-                if (currentTime > _growthEndTime)
+                if (_currentTime > _growthEndTime)
                 {
                     _growing = false;
                     elapsed = 1f;
                 }
 
-                orbitRadius = Mathf.Lerp(lastOrbitRadiusOffset, _baseOrbitRadiusOffset + (_size - _baseSize), elapsed);
-                transform.localScale = Vector3.Lerp(lastScale, Vector3.one * _size, elapsed);
-                _cameraTranslationOffset.y = Mathf.Lerp(lastCameraTranslationOffset.y, _baseCameraTranslationOffset.y + (_size - _baseSize) * 2, elapsed);
-                _cameraTranslationOffset.z = Mathf.Lerp(lastCameraTranslationOffset.z, _baseCameraTranslationOffset.z - (_size - _baseSize) * 0.1f, elapsed);
-                _cameraRotationOffset.x = Mathf.Lerp(lastCameraRotationOffset.x, _baseCameraRotationOffset.x + (_size - _baseSize) * 1.2f, elapsed);
+                orbitRadius = Mathf.Lerp(_lastOrbitRadiusOffset, _baseOrbitRadiusOffset + (_size - _baseSize), elapsed);
+                transform.localScale = Vector3.Lerp(_lastScale, Vector3.one * _size, elapsed);
+                _cameraTranslationOffset.y = Mathf.Lerp(_lastCameraTranslationOffset.y, _baseCameraTranslationOffset.y + (_size - _baseSize) * 2, elapsed);
+                _cameraTranslationOffset.z = Mathf.Lerp(_lastCameraTranslationOffset.z, _baseCameraTranslationOffset.z - (_size - _baseSize) * 0.1f, elapsed);
+                _cameraRotationOffset.x = Mathf.Lerp(_lastCameraRotationOffset.x, _baseCameraRotationOffset.x + (_size - _baseSize) * 1.2f, elapsed);
                 _mainCameraConstraint.SetTranslationOffset(0, _cameraTranslationOffset);
                 _mainCameraConstraint.SetRotationOffset(0, _cameraRotationOffset);
 

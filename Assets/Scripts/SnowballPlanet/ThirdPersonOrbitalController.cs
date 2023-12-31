@@ -102,7 +102,9 @@ namespace SnowballPlanet
                     if (item && transform.localScale.x >= item.PickSize * 0.5f)
                         continue;
 
-                    desiredPosition = hit.point + hit.normal * (transform.localScale.x * 0.9f * 0.5f);
+                    var constrainedPosition = hit.point + hit.normal * (transform.localScale.x * 0.9f * 0.5f);
+                    direction = constrainedPosition - _rigidbody.position;
+                    desiredPosition = _rigidbody.position + direction * (Mathf.Abs(_moveAmount.y) * Time.fixedDeltaTime * MovementSpeed * 2);
 
                     // Prevents the camera to turn
                     _lastMoveAmountY = 0;

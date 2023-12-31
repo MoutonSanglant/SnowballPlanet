@@ -15,6 +15,8 @@ namespace SnowballPlanet
 
         public Action<float> OnSnowballGrow;
 
+        private bool _startGrow;
+        private bool _growing;
         private Coroutine _growCoroutine;
         private float _growthEndTime;
         private float _baseSize;
@@ -52,34 +54,55 @@ namespace SnowballPlanet
             OnSnowballGrow.Invoke(_size);
         }
 
-        private IEnumerator Grow()
-        {
-            var growthStartTime = Time.time;
-            var currentTime = growthStartTime;
-            var lastScale = transform.localScale;
-            var lastCameraTranslationOffset = _cameraTranslationOffset;
-            var lastCameraRotationOffset = _cameraRotationOffset;
-            var lastOrbitRadiusOffset = orbitRadius;
+        private float growthStartTime;
+        private float currentTime;
+        private Vector3 lastScale;
+        private Vector3 lastCameraTranslationOffset;
+        private Vector3 lastCameraRotationOffset;
+        private float lastOrbitRadiusOffset;
 
-            while (currentTime < _growthEndTime)
+        protected override void FixedUpdate()
+        {
+            if (_startGrow)
             {
-                currentTime += Time.deltaTime;
+                 growthStartTime = Time.time;
+                 currentTime = growthStartTime;
+                 lastScale = transform.localScale;
+                 lastCameraTranslationOffset = _cameraTranslationOffset;
+                 lastCameraRotationOffset = _cameraRotationOffset;
+                 lastOrbitRadiusOffset = orbitRadius;
+                 _startGrow = false;
+            }
+
+            if (_growing)
+            {
+                currentTime += Time.fixedDeltaTime;
                 var elapsed = Mathf.InverseLerp(growthStartTime, _growthEndTime, currentTime);
+
+                if (currentTime > _growthEndTime)
+                {
+                    _growing = false;
+                    elapsed = 1f;
+                }
+
+                orbitRadius = Mathf.Lerp(lastOrbitRadiusOffset, _baseOrbitRadiusOffset + (_size - _baseSize), elapsed);
                 transform.localScale = Vector3.Lerp(lastScale, Vector3.one * _size, elapsed);
                 _cameraTranslationOffset.y = Mathf.Lerp(lastCameraTranslationOffset.y, _baseCameraTranslationOffset.y + (_size - _baseSize) * 2, elapsed);
                 _cameraTranslationOffset.z = Mathf.Lerp(lastCameraTranslationOffset.z, _baseCameraTranslationOffset.z - (_size - _baseSize) * 0.1f, elapsed);
                 _cameraRotationOffset.x = Mathf.Lerp(lastCameraRotationOffset.x, _baseCameraRotationOffset.x + (_size - _baseSize) * 1.2f, elapsed);
-                orbitRadius = Mathf.Lerp(lastOrbitRadiusOffset, _baseOrbitRadiusOffset + (_size - _baseSize), elapsed);
                 _mainCameraConstraint.SetTranslationOffset(0, _cameraTranslationOffset);
                 _mainCameraConstraint.SetRotationOffset(0, _cameraRotationOffset);
-                OnSnowballGrow.Invoke(_size);
 
-                yield return null;
+                OnSnowballGrow.Invoke(_size);
             }
 
-            transform.localScale = Vector3.one * _size;
-            OnSnowballGrow.Invoke(_size);
-            _growCoroutine = null;
+            base.FixedUpdate();
+
+            if (_growing)
+            {
+                CartesianToSpherical(_rigidbody.position, out var radius, out var polar, out var elevation);
+                SphericalToCartesian(orbitRadius, polar, elevation, out previousPosition);
+            }
         }
 
         private IEnumerator DisplayVictoryAndStartLoadCredits()
@@ -109,8 +132,11 @@ namespace SnowballPlanet
             _growthEndTime = Time.time + GrowthSpeed;
             _size += item.GrowthAmount;
 
-            if (_growCoroutine == null)
-                _growCoroutine = StartCoroutine(Grow());
+            if (!_growing)
+            {
+                _startGrow = true;
+                _growing = true;
+            }
 
             if (item.IsGoal)
                 StartCoroutine(DisplayVictoryAndStartLoadCredits());

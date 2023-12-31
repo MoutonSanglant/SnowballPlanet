@@ -16,10 +16,10 @@ namespace SnowballPlanet
 
         protected Transform orbitCenter;
         protected float orbitRadius = 1f;
+        protected Vector3 previousPosition;
 
         private Vector2 _moveAmount;
         private float _lastMoveAmountY;
-        private Vector3 _previousPosition;
         private Vector3 _previousForward;
         private bool _alignCamera;
         private bool _locked;
@@ -41,7 +41,7 @@ namespace SnowballPlanet
         }
 
         // Cache
-        private Rigidbody _rigidbody;
+        protected Rigidbody _rigidbody;
         private int _collisionMask;
 
         #region UnityEvents
@@ -49,10 +49,10 @@ namespace SnowballPlanet
         {
             _collisionMask = LayerMask.GetMask("Colliders");
             _rigidbody = GetComponent<Rigidbody>();
-            _previousPosition = _rigidbody.position - transform.forward;
+            previousPosition = _rigidbody.position - transform.forward;
         }
 
-        private void FixedUpdate()
+        protected virtual void FixedUpdate()
         {
             var upward = (transform.position - orbitCenter.position).normalized;
             var forward = transform.forward;
@@ -62,10 +62,9 @@ namespace SnowballPlanet
                 if (_alignCamera)
                     forward = _previousForward;
                 else if (_lastMoveAmountY > 0f)
-                    forward = (_rigidbody.position - _previousPosition).normalized;
+                    forward = (_rigidbody.position - previousPosition).normalized;
 
                 _alignCamera = false;
-                _previousPosition = _rigidbody.position;
                 _lastMoveAmountY = _moveAmount.y;
             }
             else if (_moveAmount.y < 0f)
@@ -73,10 +72,9 @@ namespace SnowballPlanet
                 if (_alignCamera)
                     forward = _previousForward;
                 else if (_lastMoveAmountY < 0f)
-                    forward = (_previousPosition - _rigidbody.position).normalized;
+                    forward = (previousPosition - _rigidbody.position).normalized;
 
                 _alignCamera = false;
-                _previousPosition = _rigidbody.position;
                 _lastMoveAmountY = _moveAmount.y;
             }
             else if (Mathf.Abs(_moveAmount.x) > 0f)
@@ -118,6 +116,7 @@ namespace SnowballPlanet
 
             _rigidbody.Move(cartesianCoordinates, Quaternion.LookRotation(forward, upward));
             _previousForward = transform.forward;
+            previousPosition = _rigidbody.position;
         }
         #endregion UnityEvents
 
@@ -135,7 +134,7 @@ namespace SnowballPlanet
         /// Converts a coordinate from a spherical system to a cartesian system
         /// </summary>
         /// <see cref="https://github.com/mortennobel/CameraLib4U/blob/master/Assets/_CameraLib4U/Scripts/SphericalCoordinates.cs"/>
-        private static void SphericalToCartesian(float radius, float polar, float elevation, out Vector3 outCart){
+        protected static void SphericalToCartesian(float radius, float polar, float elevation, out Vector3 outCart){
             var a = radius * Mathf.Cos(elevation);
 
             outCart.x = a * Mathf.Cos(polar);
@@ -147,7 +146,7 @@ namespace SnowballPlanet
         /// Converts a coordinate from a cartesian system to a spherical system
         /// </summary>
         /// <see cref="https://github.com/mortennobel/CameraLib4U/blob/master/Assets/_CameraLib4U/Scripts/SphericalCoordinates.cs"/>
-        private static void CartesianToSpherical(Vector3 cartCoords, out float outRadius, out float outPolar, out float outElevation){
+        protected static void CartesianToSpherical(Vector3 cartCoords, out float outRadius, out float outPolar, out float outElevation){
             if (cartCoords.x == 0)
                 cartCoords.x = Mathf.Epsilon;
             outRadius = Mathf.Sqrt((cartCoords.x * cartCoords.x)

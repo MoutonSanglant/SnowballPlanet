@@ -3,7 +3,17 @@ guid: 516dfc50aa5ac1edf8783697b0ae46c1
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: GiftBox
+    second: {fileID: 2100000, guid: 035806531b8eeba42b5e00bda26c151b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ribon
+    second: {fileID: 2100000, guid: 42e7613b9261d0d449d9fc331eae36fe, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

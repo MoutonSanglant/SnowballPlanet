@@ -27,7 +27,8 @@ Material:
   m_ValidKeywords:
   - _HALFTONESHAPE_DOT
   - _TOON_SHADING_ON
-  m_InvalidKeywords: []
+  m_InvalidKeywords:
+  - _STEPVIARAMPTEXTURE_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 1
@@ -195,7 +196,7 @@ Material:
     - _SpecClipMaskScale: 1
     - _SpecShadowStrength: 1
     - _SpecularClipStrength: 0
-    - _SpecularFalloff: 0.217
+    - _SpecularFalloff: 0.037
     - _SpecularHighlights: 1
     - _SpecularSize: 0.204
     - _SpherizeNormalEnabled: 0

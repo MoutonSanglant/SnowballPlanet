@@ -16,12 +16,12 @@ PrefabInstance:
     - target: {fileID: 1381955529372414135, guid: 9ae1dbcf076a5dbb492043f3762e4ccf,
         type: 3}
       propertyPath: <PickSize>k__BackingField
-      value: 5
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 1381955529372414135, guid: 9ae1dbcf076a5dbb492043f3762e4ccf,
         type: 3}
       propertyPath: <GrowthAmount>k__BackingField
-      value: 0.4
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 6063355713047551109, guid: 9ae1dbcf076a5dbb492043f3762e4ccf,
         type: 3}

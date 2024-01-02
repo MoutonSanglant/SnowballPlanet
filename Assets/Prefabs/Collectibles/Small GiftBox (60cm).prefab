@@ -66,12 +66,12 @@ PrefabInstance:
     - target: {fileID: 8996503776969201105, guid: bdda2a45bb1fcef509570e9c4e325be6,
         type: 3}
       propertyPath: <PickSize>k__BackingField
-      value: 1.2
+      value: 1.4
       objectReference: {fileID: 0}
     - target: {fileID: 8996503776969201105, guid: bdda2a45bb1fcef509570e9c4e325be6,
         type: 3}
       propertyPath: <GrowthAmount>k__BackingField
-      value: 0.2
+      value: 0.14
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

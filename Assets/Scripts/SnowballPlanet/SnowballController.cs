@@ -115,9 +115,10 @@ namespace SnowballPlanet
 
         private void PickUpItem(PickableItem item)
         {
+            item.DestroyCollider();
+
             var parentConstraint = item.GetComponent<ParentConstraint>();
 
-            item.GetComponentInChildren<BoxCollider>().enabled = false;
             parentConstraint.AddSource(new ConstraintSource { sourceTransform = _snowballRollTransform, weight = 1 });
             parentConstraint.translationAtRest = transform.position;
             parentConstraint.rotationAtRest = transform.rotation.eulerAngles;

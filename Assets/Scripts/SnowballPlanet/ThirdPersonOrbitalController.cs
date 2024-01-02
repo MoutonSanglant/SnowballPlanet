@@ -1,7 +1,7 @@
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 namespace SnowballPlanet
 {
@@ -13,6 +13,7 @@ namespace SnowballPlanet
     {
         [SerializeField] private float MovementSpeed = 1f;
         [SerializeField] private float RotationSpeed = 1f;
+        [SerializeField] private AnimationCurve SpeedScaleAdjustment;
 
         protected Transform orbitCenter;
         protected float orbitRadius = 1f;
@@ -87,14 +88,27 @@ namespace SnowballPlanet
 
             forward = Quaternion.AngleAxis(_moveAmount.x * Time.fixedDeltaTime * RotationSpeed, upward) * forward;
 
-            var desiredPosition = _rigidbody.position + forward * (_moveAmount.y * Time.fixedDeltaTime * MovementSpeed);
+            var speed = MovementSpeed * SpeedScaleAdjustment.Evaluate(Mathf.Min(transform.localScale.x, 1f));
+            var desiredPosition = _rigidbody.position + forward * (_moveAmount.y * Time.fixedDeltaTime * speed);
             var direction = (desiredPosition - transform.position).normalized;
-			var groundPosition = transform.position - transform.up * transform.localScale.x * 0.5f;
+			var groundPosition = transform.position - transform.up * (transform.localScale.x * 0.95f);
+			var rightPosition = transform.position + transform.right * transform.localScale.x;
+			var leftPosition = transform.position - transform.right * transform.localScale.x;
 
             // Manual collision check
-            var hits = Physics.RaycastAll(groundPosition, direction, transform.localScale.x * 0.9f, _collisionMask);
+            var hits = Physics.RaycastAll(transform.position, direction, transform.localScale.x * 0.9f, _collisionMask).ToHashSet();
+            var groundHits = Physics.RaycastAll(groundPosition, direction, transform.localScale.x * 0.9f, _collisionMask);
+            var rightHits = Physics.RaycastAll(rightPosition, direction, transform.localScale.x * 0.9f, _collisionMask);
+            var leftHits = Physics.RaycastAll(leftPosition, direction, transform.localScale.x * 0.9f, _collisionMask);
 
-            if (hits.Length > 0)
+            foreach (var hit in groundHits)
+                hits.Add(hit);
+            foreach (var hit in leftHits)
+                hits.Add(hit);
+            foreach (var hit in rightHits)
+                hits.Add(hit);
+
+            if (hits.Count > 0)
             {
                 foreach (var hit in hits)
                 {
@@ -105,7 +119,7 @@ namespace SnowballPlanet
 
                     var constrainedPosition = hit.point + hit.normal * (transform.localScale.x * 0.9f * 0.5f);
                     direction = constrainedPosition - _rigidbody.position;
-                    desiredPosition = _rigidbody.position + direction * (Mathf.Abs(_moveAmount.y) * Time.fixedDeltaTime * MovementSpeed * 2);
+                    desiredPosition = _rigidbody.position + direction * (Mathf.Abs(_moveAmount.y) * Time.fixedDeltaTime * speed * 2);
 
                     // Prevents the camera to turn
                     _lastMoveAmountY = 0;

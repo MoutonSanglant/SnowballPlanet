@@ -89,9 +89,10 @@ namespace SnowballPlanet
 
             var desiredPosition = _rigidbody.position + forward * (_moveAmount.y * Time.fixedDeltaTime * MovementSpeed);
             var direction = (desiredPosition - transform.position).normalized;
+			var groundPosition = transform.position - transform.up * transform.localScale.x * 0.5f;
 
             // Manual collision check
-            var hits = Physics.RaycastAll(transform.position, direction, transform.localScale.x * 0.9f, _collisionMask);
+            var hits = Physics.RaycastAll(groundPosition, direction, transform.localScale.x * 0.9f, _collisionMask);
 
             if (hits.Length > 0)
             {

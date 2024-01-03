@@ -14,6 +14,7 @@ namespace SnowballPlanet
         [SerializeField] private PlanetInfo TargetPlanet;
         [SerializeField] private float GrowthSpeed = 0.4f;
         [SerializeField] private TMP_Text VictoryText;
+        [SerializeField] private AnimationCurve VictoryAnimationCurve;
         [SerializeField] private float VictoryApparitionDuration = 2f;
         [SerializeField] private float VictoryDisplayDuration = 3f;
 
@@ -118,7 +119,9 @@ namespace SnowballPlanet
             {
                 elapsed += Time.deltaTime;
 
-                VictoryText.transform.localScale = Vector3.one * Mathf.SmoothStep(0f, 1f, elapsed / VictoryDisplayDuration);
+                VictoryText.transform.localScale = Vector3.one * VictoryAnimationCurve.Evaluate(elapsed / VictoryApparitionDuration);
+
+                yield return null;
             }
 
             yield return new WaitForSeconds(VictoryDisplayDuration);

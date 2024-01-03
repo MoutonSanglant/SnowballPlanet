@@ -5214,7 +5214,40 @@ MonoBehaviour:
   TargetPlanet: {fileID: 674669195}
   GrowthSpeed: 0.8
   VictoryText: {fileID: 1080752570}
-  VictoryApparitionDuration: 2
+  VictoryAnimationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -0.0033340454
+      value: 0.0019836426
+      inSlope: 4.0445285
+      outSlope: 4.0445285
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.038077004
+    - serializedVersion: 3
+      time: 0.871666
+      value: 0.82605904
+      inSlope: -2.0106733
+      outSlope: -2.0106733
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.06493772
+      outWeight: 1
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: -4.5856495
+      outSlope: -4.5856495
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.13473807
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  VictoryApparitionDuration: 0.86
   VictoryDisplayDuration: 3
 --- !u!135 &503661195
 SphereCollider:

@@ -16,7 +16,7 @@ PrefabInstance:
     - target: {fileID: 1381955529372414135, guid: 9ae1dbcf076a5dbb492043f3762e4ccf,
         type: 3}
       propertyPath: <PickSize>k__BackingField
-      value: 7
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 1381955529372414135, guid: 9ae1dbcf076a5dbb492043f3762e4ccf,
         type: 3}

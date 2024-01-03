@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Eflatun.SceneReference;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.SceneManagement;
@@ -12,6 +13,9 @@ namespace SnowballPlanet
         [SerializeField] private SceneReference CreditsScene;
         [SerializeField] private PlanetInfo TargetPlanet;
         [SerializeField] private float GrowthSpeed = 0.4f;
+        [SerializeField] private TMP_Text VictoryText;
+        [SerializeField] private float VictoryApparitionDuration = 2f;
+        [SerializeField] private float VictoryDisplayDuration = 3f;
 
         public Action<float> OnSnowballGrow;
 
@@ -108,7 +112,16 @@ namespace SnowballPlanet
         {
             Locked = true;
 
-            yield return new WaitForSeconds(5f);
+            var elapsed = 0f;
+
+            while (elapsed < VictoryApparitionDuration)
+            {
+                elapsed += Time.deltaTime;
+
+                VictoryText.transform.localScale = Vector3.one * Mathf.SmoothStep(0f, 1f, elapsed / VictoryDisplayDuration);
+            }
+
+            yield return new WaitForSeconds(VictoryDisplayDuration);
 
             SceneManager.LoadScene(CreditsScene.BuildIndex);
         }

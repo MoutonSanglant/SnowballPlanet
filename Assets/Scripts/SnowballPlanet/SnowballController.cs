@@ -1,16 +1,13 @@
 using System;
 using System.Collections;
-using Eflatun.SceneReference;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Animations;
-using UnityEngine.SceneManagement;
 
 namespace SnowballPlanet
 {
     public class SnowballController : ThirdPersonOrbitalController
     {
-        [SerializeField] private SceneReference CreditsScene;
         [SerializeField] private PlanetInfo TargetPlanet;
         [SerializeField] private float GrowthSpeed = 0.4f;
         [SerializeField] private TMP_Text VictoryText;
@@ -126,7 +123,7 @@ namespace SnowballPlanet
 
             yield return new WaitForSeconds(VictoryDisplayDuration);
 
-            SceneManager.LoadScene(CreditsScene.BuildIndex);
+            SceneTransitionManager.LoadScene(SceneTransitionManager.Scene.Credits);
         }
 
         private void PickUpItem(PickableItem item)

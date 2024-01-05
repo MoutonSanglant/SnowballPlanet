@@ -14,6 +14,7 @@ namespace SnowballPlanet
         [SerializeField] private AnimationCurve VictoryAnimationCurve;
         [SerializeField] private float VictoryApparitionDuration = 2f;
         [SerializeField] private float VictoryDisplayDuration = 3f;
+        [SerializeField] private ParticleSystem SnowParticles;
 
         public Action<float> OnSnowballGrow;
 

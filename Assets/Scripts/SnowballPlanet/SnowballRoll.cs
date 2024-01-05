@@ -6,6 +6,7 @@ namespace SnowballPlanet
     public class SnowballRoll : MonoBehaviour
     {
         [SerializeField] private float RollSpeed = 1f;
+        [SerializeField] private ParticleSystem SnowParticles;
 
         private Vector2 _rollAmount;
         private Transform _parent;
@@ -21,15 +22,19 @@ namespace SnowballPlanet
 
         private void Update()
         {
-            if (Mathf.Abs(_rollAmount.y) > 0)
-            {
-                transform.RotateAround(transform.position,  _parent.right, _rollAmount.y * Time.deltaTime * RollSpeed);
-            }
+            var isTurning = Mathf.Abs(_rollAmount.y) > 0;
+            var isMoving = Mathf.Abs(_rollAmount.x) > 0;
 
-            if (Mathf.Abs(_rollAmount.x) > 0)
-            {
+            if (isTurning)
+                transform.RotateAround(transform.position,  _parent.right, _rollAmount.y * Time.deltaTime * RollSpeed);
+
+            if (isMoving)
                 transform.RotateAround(transform.position, _parent.forward, _rollAmount.x * Time.deltaTime * RollSpeed);
-            }
+
+            if (!(isTurning || isMoving))
+                SnowParticles.Stop();
+            else if (SnowParticles.isStopped)
+                SnowParticles.Play();
         }
     }
 }

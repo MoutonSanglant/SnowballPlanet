@@ -92,14 +92,14 @@ namespace SnowballPlanet
             var desiredPosition = _rigidbody.position + forward * (_moveAmount.y * Time.fixedDeltaTime * speed);
             var direction = (desiredPosition - transform.position).normalized;
 			var groundPosition = transform.position - transform.up * (transform.localScale.x * 0.95f);
-			var rightPosition = transform.position + transform.right * transform.localScale.x;
-			var leftPosition = transform.position - transform.right * transform.localScale.x;
+			var rightPosition = transform.position + transform.right * (transform.localScale.x * 0.74f);
+			var leftPosition = transform.position - transform.right * (transform.localScale.x * 0.74f);
 
             // Manual collision check
             var hits = Physics.RaycastAll(transform.position, direction, transform.localScale.x * 0.9f, _collisionMask).ToHashSet();
-            var groundHits = Physics.RaycastAll(groundPosition, direction, transform.localScale.x * 0.9f, _collisionMask);
-            var rightHits = Physics.RaycastAll(rightPosition, direction, transform.localScale.x * 0.9f, _collisionMask);
-            var leftHits = Physics.RaycastAll(leftPosition, direction, transform.localScale.x * 0.9f, _collisionMask);
+            var groundHits = Physics.RaycastAll(groundPosition, direction * 0.7f, transform.localScale.x * 0.9f, _collisionMask);
+            var rightHits = Physics.RaycastAll(rightPosition, direction * 0.7f, transform.localScale.x * 0.9f, _collisionMask);
+            var leftHits = Physics.RaycastAll(leftPosition, direction * 0.7f, transform.localScale.x * 0.9f, _collisionMask);
 
             foreach (var hit in groundHits)
                 hits.Add(hit);
@@ -117,9 +117,14 @@ namespace SnowballPlanet
                     if (item && transform.localScale.x >= item.PickSize * 0.5f)
                         continue;
 
-                    var constrainedPosition = hit.point + hit.normal * (transform.localScale.x * 0.9f * 0.5f);
+                    // Get a better normal for irregular volumes
+                    var hitDirection = (hit.transform.position - desiredPosition).normalized;
+                    var normalHit = Physics.RaycastAll(desiredPosition, hitDirection, transform.localScale.x, _collisionMask);
+                    var newHit = normalHit.Length > 0 ? normalHit.First() : hit;
+
+                    var constrainedPosition = hit.point + newHit.normal * (transform.localScale.x * 0.9f * 0.5f);
                     direction = constrainedPosition - _rigidbody.position;
-                    desiredPosition = _rigidbody.position + direction * (Mathf.Abs(_moveAmount.y) * Time.fixedDeltaTime * speed * 2);
+                    desiredPosition = _rigidbody.position + direction * (Mathf.Abs(_moveAmount.y) * Time.fixedDeltaTime * speed * 30);
 
                     // Prevents the camera to turn
                     _lastMoveAmountY = 0;

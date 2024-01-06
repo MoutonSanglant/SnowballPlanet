@@ -125,6 +125,10 @@ namespace SnowballPlanet
                     // Prevents the camera to turn
                     _lastMoveAmountY = 0;
 
+                    var projectedForward = Vector3.ProjectOnPlane(forward, desiredPosition - orbitCenter.position);
+
+                    forward = Quaternion.AngleAxis(_moveAmount.x * Time.fixedDeltaTime * RotationSpeed, upward) * projectedForward.normalized;
+
                     break;
                 }
             }

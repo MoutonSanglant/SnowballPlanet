@@ -14,6 +14,7 @@ namespace SnowballPlanet
     {
         [SerializeField] private float MaxVelocity = 2f;
         [SerializeField] private float AccelerationRate = 2f;
+        [SerializeField] private float DecelerationRate = 2f;
         [SerializeField] private float RotationRate = 2f;
         [SerializeField] private float MovementSpeed = 1f;
         [SerializeField] private float RotationSpeed = 1f;
@@ -64,20 +65,24 @@ namespace SnowballPlanet
         {
             if (_moveAmount.y > 0f)
             {
-                velocity.y += Time.fixedDeltaTime * AccelerationRate;
-                velocity.y = Mathf.Clamp(velocity.y, 0f, MaxVelocity);
+                if (velocity.y < 0f)
+                    velocity.y += Time.fixedDeltaTime * AccelerationRate * 0.4f;
+                else
+                    velocity.y += Time.fixedDeltaTime * AccelerationRate;
+
+                velocity.y = Mathf.Clamp(velocity.y, -MaxVelocity, MaxVelocity);
             }
             else if (_moveAmount.y < 0f)
             {
-                velocity.y -= Time.fixedDeltaTime * AccelerationRate * 0.5f;
-                velocity.y = Mathf.Clamp(velocity.y, -MaxVelocity, 0f);
+                velocity.y -= Time.fixedDeltaTime * AccelerationRate * 0.2f;
+                velocity.y = Mathf.Clamp(velocity.y, -MaxVelocity, MaxVelocity);
             }
             else
             {
                 if (velocity.y < 0f)
-                    velocity.y += Time.fixedDeltaTime * RotationRate;
+                    velocity.y += Time.fixedDeltaTime * DecelerationRate;
                 else if (velocity.y > 0f)
-                    velocity.y -= Time.fixedDeltaTime * RotationRate;
+                    velocity.y -= Time.fixedDeltaTime * DecelerationRate;
 
                 if (Mathf.Abs(velocity.y) < 0.001f)
                     velocity.y = 0f;
@@ -103,8 +108,6 @@ namespace SnowballPlanet
                 if (Mathf.Abs(velocity.x) < 0.001f)
                     velocity.x = 0f;
             }
-
-            Debug.Log(velocity);
 
             var upward = (transform.position - orbitCenter.position).normalized;
             var forward = transform.forward;

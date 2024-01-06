@@ -82,10 +82,7 @@ namespace SnowballPlanet
                 var elapsed = Mathf.InverseLerp(_growthStartTime, _growthEndTime, _currentTime);
 
                 if (_currentTime > _growthEndTime)
-                {
-                    _growing = false;
                     elapsed = 1f;
-                }
 
                 orbitRadius = Mathf.Lerp(_lastOrbitRadiusOffset, _baseOrbitRadiusOffset + (_size - _baseSize), elapsed);
                 transform.localScale = Vector3.Lerp(_lastScale, Vector3.one * _size, elapsed);
@@ -102,6 +99,9 @@ namespace SnowballPlanet
 
             if (_growing)
             {
+                if (_currentTime > _growthEndTime)
+                    _growing = false;
+
                 CartesianToSpherical(_rigidbody.position, out var radius, out var polar, out var elevation);
                 SphericalToCartesian(orbitRadius, polar, elevation, out previousPosition);
             }

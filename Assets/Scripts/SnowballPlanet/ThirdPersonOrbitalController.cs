@@ -185,6 +185,7 @@ namespace SnowballPlanet
 
             CartesianToSpherical(desiredPosition, out var radius, out var polar, out var elevation);
             SphericalToCartesian(orbitRadius, polar, elevation, out var cartesianCoordinates);
+            OnControllerMove.Invoke(velocity);
 
             _rigidbody.Move(cartesianCoordinates, Quaternion.LookRotation(forward, upward));
             _previousForward = transform.forward;
@@ -196,8 +197,6 @@ namespace SnowballPlanet
         public void OnMove(InputAction.CallbackContext context)
         {
             _moveAmount = Locked ? Vector2.zero : context.ReadValue<Vector2>();
-
-            OnControllerMove.Invoke(_moveAmount);
         }
         #endregion UnityEvents
 

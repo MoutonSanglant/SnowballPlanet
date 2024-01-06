@@ -90,8 +90,8 @@ namespace SnowballPlanet
                 orbitRadius = Mathf.Lerp(_lastOrbitRadiusOffset, _baseOrbitRadiusOffset + (_size - _baseSize), elapsed);
                 transform.localScale = Vector3.Lerp(_lastScale, Vector3.one * _size, elapsed);
                 _cameraTranslationOffset.y = Mathf.Lerp(_lastCameraTranslationOffset.y, _baseCameraTranslationOffset.y + (_size - _baseSize) * 3, elapsed);
-                _cameraTranslationOffset.z = Mathf.Lerp(_lastCameraTranslationOffset.z, _baseCameraTranslationOffset.z - (_size - _baseSize) * 0.4f, elapsed);
-                _cameraRotationOffset.x = Mathf.Lerp(_lastCameraRotationOffset.x, _baseCameraRotationOffset.x + (_size - _baseSize) * 4.8f, elapsed);
+                _cameraTranslationOffset.z = Mathf.Lerp(_lastCameraTranslationOffset.z, _baseCameraTranslationOffset.z - (_size - _baseSize) * 0.34f, elapsed);
+                _cameraRotationOffset.x = Mathf.Lerp(_lastCameraRotationOffset.x, _baseCameraRotationOffset.x + (_size - _baseSize) * 3.6f, elapsed);
                 _mainCameraConstraint.SetTranslationOffset(0, _cameraTranslationOffset);
                 _mainCameraConstraint.SetRotationOffset(0, _cameraRotationOffset);
 

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace SnowballPlanet
 {
@@ -11,6 +12,9 @@ namespace SnowballPlanet
     /// <see cref="https://en.wikipedia.org/wiki/Spherical_coordinate_system"/>
     public class ThirdPersonOrbitalController : MonoBehaviour
     {
+        [SerializeField] private float MaxVelocity = 2f;
+        [SerializeField] private float AccelerationRate = 2f;
+        [SerializeField] private float RotationRate = 2f;
         [SerializeField] private float MovementSpeed = 1f;
         [SerializeField] private float RotationSpeed = 1f;
         [SerializeField] private AnimationCurve SpeedScaleAdjustment;
@@ -20,8 +24,9 @@ namespace SnowballPlanet
         protected float orbitRadius = 1f;
         protected Vector3 previousPosition;
 
+        protected Vector2 velocity;
         private Vector2 _moveAmount;
-        private float _lastMoveAmountY;
+        private float _lastVelocityY;
         private Vector3 _previousForward;
         private bool _alignCamera;
         private bool _locked;
@@ -38,7 +43,8 @@ namespace SnowballPlanet
             {
                 _locked = value;
                 _moveAmount = value ? Vector2.zero : _moveAmount;
-                OnControllerMove.Invoke(_moveAmount);
+                velocity = value ? Vector2.zero : velocity;
+                OnControllerMove.Invoke(velocity);
             }
         }
 
@@ -56,45 +62,89 @@ namespace SnowballPlanet
 
         protected virtual void FixedUpdate()
         {
-            var upward = (transform.position - orbitCenter.position).normalized;
-            var forward = transform.forward;
-
             if (_moveAmount.y > 0f)
             {
-                if (_alignCamera)
-                    forward = _previousForward;
-                else if (_lastMoveAmountY > 0f)
-                    forward = (_rigidbody.position - previousPosition).normalized;
-
-                _alignCamera = false;
-                _lastMoveAmountY = _moveAmount.y;
+                velocity.y += Time.fixedDeltaTime * AccelerationRate;
+                velocity.y = Mathf.Clamp(velocity.y, 0f, MaxVelocity);
             }
             else if (_moveAmount.y < 0f)
             {
+                velocity.y -= Time.fixedDeltaTime * AccelerationRate * 0.5f;
+                velocity.y = Mathf.Clamp(velocity.y, -MaxVelocity, 0f);
+            }
+            else
+            {
+                if (velocity.y < 0f)
+                    velocity.y += Time.fixedDeltaTime * RotationRate;
+                else if (velocity.y > 0f)
+                    velocity.y -= Time.fixedDeltaTime * RotationRate;
+
+                if (Mathf.Abs(velocity.y) < 0.001f)
+                    velocity.y = 0f;
+            }
+
+            if (_moveAmount.x > 0f)
+            {
+                velocity.x += Time.fixedDeltaTime * RotationRate;
+                velocity.x = Mathf.Clamp(velocity.x, 0f, MaxVelocity * Mathf.Abs(velocity.y));
+            }
+            else if (_moveAmount.x < 0f)
+            {
+                velocity.x -= Time.fixedDeltaTime * RotationRate;
+                velocity.x = Mathf.Clamp(velocity.x, -MaxVelocity * Mathf.Abs(velocity.y), 0f);
+            }
+            else
+            {
+                if (velocity.x < 0f)
+                    velocity.x += Time.fixedDeltaTime * RotationRate;
+                else if (velocity.x > 0f)
+                    velocity.x -= Time.fixedDeltaTime * RotationRate;
+
+                if (Mathf.Abs(velocity.x) < 0.001f)
+                    velocity.x = 0f;
+            }
+
+            Debug.Log(velocity);
+
+            var upward = (transform.position - orbitCenter.position).normalized;
+            var forward = transform.forward;
+
+            if (velocity.y > 0f)
+            {
                 if (_alignCamera)
                     forward = _previousForward;
-                else if (_lastMoveAmountY < 0f)
+                else if (_lastVelocityY > 0f)
+                    forward = (_rigidbody.position - previousPosition).normalized;
+
+                _alignCamera = false;
+                _lastVelocityY = velocity.y;
+            }
+            else if (velocity.y < 0f)
+            {
+                if (_alignCamera)
+                    forward = _previousForward;
+                else if (_lastVelocityY < 0f)
                     forward = (previousPosition - _rigidbody.position).normalized;
 
                 _alignCamera = false;
-                _lastMoveAmountY = _moveAmount.y;
+                _lastVelocityY = velocity.y;
             }
-            else if (Mathf.Abs(_moveAmount.x) > 0f)
+            else if (Mathf.Abs(velocity.x) > 0f)
             {
                 _alignCamera = true;
-                _lastMoveAmountY = 0;
+                _lastVelocityY = 0;
             }
             else
-                _lastMoveAmountY = 0;
+                _lastVelocityY = 0;
 
-            forward = Quaternion.AngleAxis(_moveAmount.x * Time.fixedDeltaTime * RotationSpeed, upward) * forward;
+            forward = Quaternion.AngleAxis(velocity.x * Time.fixedDeltaTime * RotationSpeed, upward) * forward;
 
             var bodyPosition = _rigidbody.position;
             var bodyScale = transform.localScale.x;
             var sphereRadius = bodyScale * 0.5f;
 
             var speed = MovementSpeed * SpeedScaleAdjustment.Evaluate(Mathf.Min(bodyScale, 1f));
-            var desiredPosition = _rigidbody.position + forward * (_moveAmount.y * Time.fixedDeltaTime * speed);
+            var desiredPosition = _rigidbody.position + forward * (velocity.y * Time.fixedDeltaTime * speed);
             var desiredDirection = (desiredPosition - bodyPosition).normalized;
 
             var colliders = Physics.OverlapSphere(desiredPosition, sphereRadius, _collisionMask);
@@ -120,14 +170,14 @@ namespace SnowballPlanet
                     var constrainedPosition = hit.point + repulsionNormal * bodyScale;
                     var newDirection = constrainedPosition - bodyPosition;
 
-                    desiredPosition = bodyPosition + newDirection * (Mathf.Abs(_moveAmount.y) * Time.fixedDeltaTime * speed * FrictionCorrection);
+                    desiredPosition = bodyPosition + newDirection * (Mathf.Abs(velocity.y) * Time.fixedDeltaTime * speed * FrictionCorrection);
 
                     // Prevents the camera to turn
-                    _lastMoveAmountY = 0;
+                    _lastVelocityY = 0;
 
                     var projectedForward = Vector3.ProjectOnPlane(forward, desiredPosition - orbitCenter.position);
 
-                    forward = Quaternion.AngleAxis(_moveAmount.x * Time.fixedDeltaTime * RotationSpeed, upward) * projectedForward.normalized;
+                    forward = Quaternion.AngleAxis(velocity.x * Time.fixedDeltaTime * RotationSpeed, upward) * projectedForward.normalized;
 
                     break;
                 }

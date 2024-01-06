@@ -14,6 +14,7 @@ namespace SnowballPlanet
         [SerializeField] private float MovementSpeed = 1f;
         [SerializeField] private float RotationSpeed = 1f;
         [SerializeField] private AnimationCurve SpeedScaleAdjustment;
+        [SerializeField] private float FrictionCorrection = 1f;
 
         protected Transform orbitCenter;
         protected float orbitRadius = 1f;
@@ -88,43 +89,38 @@ namespace SnowballPlanet
 
             forward = Quaternion.AngleAxis(_moveAmount.x * Time.fixedDeltaTime * RotationSpeed, upward) * forward;
 
-            var speed = MovementSpeed * SpeedScaleAdjustment.Evaluate(Mathf.Min(transform.localScale.x, 1f));
+            var bodyPosition = _rigidbody.position;
+            var bodyScale = transform.localScale.x;
+            var sphereRadius = bodyScale * 0.5f;
+
+            var speed = MovementSpeed * SpeedScaleAdjustment.Evaluate(Mathf.Min(bodyScale, 1f));
             var desiredPosition = _rigidbody.position + forward * (_moveAmount.y * Time.fixedDeltaTime * speed);
-            var direction = (desiredPosition - transform.position).normalized;
-			var groundPosition = transform.position - transform.up * (transform.localScale.x * 0.95f);
-			var rightPosition = transform.position + transform.right * (transform.localScale.x * 0.74f);
-			var leftPosition = transform.position - transform.right * (transform.localScale.x * 0.74f);
+            var desiredDirection = (desiredPosition - bodyPosition).normalized;
 
-            // Manual collision check
-            var hits = Physics.RaycastAll(transform.position, direction, transform.localScale.x * 0.9f, _collisionMask).ToHashSet();
-            var groundHits = Physics.RaycastAll(groundPosition, direction * 0.7f, transform.localScale.x * 0.9f, _collisionMask);
-            var rightHits = Physics.RaycastAll(rightPosition, direction * 0.7f, transform.localScale.x * 0.9f, _collisionMask);
-            var leftHits = Physics.RaycastAll(leftPosition, direction * 0.7f, transform.localScale.x * 0.9f, _collisionMask);
+            var colliders = Physics.OverlapSphere(desiredPosition, sphereRadius, _collisionMask);
 
-            foreach (var hit in groundHits)
-                hits.Add(hit);
-            foreach (var hit in leftHits)
-                hits.Add(hit);
-            foreach (var hit in rightHits)
-                hits.Add(hit);
-
-            if (hits.Count > 0)
+            if (colliders.Length > 0)
             {
-                foreach (var hit in hits)
+                foreach (var collider in colliders)
                 {
-                    var item = hit.transform.GetComponentInParent<PickableItem>();
+                    var item = collider.transform.GetComponentInParent<PickableItem>();
 
                     if (item && transform.localScale.x >= item.PickSize * 0.5f)
                         continue;
 
-                    // Get a better normal for irregular volumes
-                    var hitDirection = (hit.transform.position - desiredPosition).normalized;
-                    var normalHit = Physics.RaycastAll(desiredPosition, hitDirection, transform.localScale.x, _collisionMask);
-                    var newHit = normalHit.Length > 0 ? normalHit.First() : hit;
+                    var colliderDirection = (collider.transform.position - bodyPosition).normalized;
+                    var hits = Physics.RaycastAll(bodyPosition, colliderDirection, bodyScale, _collisionMask);
 
-                    var constrainedPosition = hit.point + newHit.normal * (transform.localScale.x * 0.9f * 0.5f);
-                    direction = constrainedPosition - _rigidbody.position;
-                    desiredPosition = _rigidbody.position + direction * (Mathf.Abs(_moveAmount.y) * Time.fixedDeltaTime * speed * 30);
+                    if (hits.Length < 1)
+                        continue;
+
+                    var hit = hits.First();
+                    var projectedNormal = Vector3.ProjectOnPlane(hit.normal, transform.up);
+                    var repulsionNormal = ((projectedNormal.normalized + desiredDirection) * 0.5f).normalized;
+                    var constrainedPosition = hit.point + repulsionNormal * bodyScale;
+                    var newDirection = constrainedPosition - bodyPosition;
+
+                    desiredPosition = bodyPosition + newDirection * (Mathf.Abs(_moveAmount.y) * Time.fixedDeltaTime * speed * FrictionCorrection);
 
                     // Prevents the camera to turn
                     _lastMoveAmountY = 0;

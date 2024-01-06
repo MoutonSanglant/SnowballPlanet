@@ -5492,6 +5492,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  FrictionCorrection: 0.5
   TargetPlanet: {fileID: 674669195}
   GrowthSpeed: 0.8
   VictoryText: {fileID: 1080752570}

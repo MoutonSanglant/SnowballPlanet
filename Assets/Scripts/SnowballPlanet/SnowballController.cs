@@ -15,6 +15,7 @@ namespace SnowballPlanet
         [SerializeField] private float VictoryApparitionDuration = 2f;
         [SerializeField] private float VictoryDisplayDuration = 3f;
 
+        public static Action OnVictory = () => {};
         public Action<float> OnSnowballGrow;
 
         private bool _startGrow;
@@ -108,6 +109,7 @@ namespace SnowballPlanet
 
         private IEnumerator DisplayVictoryAndStartLoadCredits()
         {
+            OnVictory.Invoke();
             Locked = true;
 
             var elapsed = 0f;

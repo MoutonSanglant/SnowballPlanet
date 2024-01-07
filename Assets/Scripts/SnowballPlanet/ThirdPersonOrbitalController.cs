@@ -13,8 +13,13 @@ namespace SnowballPlanet
     public class ThirdPersonOrbitalController : MonoBehaviour
     {
         [SerializeField] private float MaxVelocity = 2f;
-        [SerializeField] private float AccelerationRate = 2f;
+        [SerializeField] private float MinVelocity = 0.32f;
+        [SerializeField] private float MinAngularVelocity = 0.12f;
+        [SerializeField] private float ForwardAccelerationRate = 2f;
+        [SerializeField] private float BackwardAccelerationRate = 2f;
         [SerializeField] private float DecelerationRate = 2f;
+        [SerializeField] private float ForwardBrakeRate = 1f;
+        [SerializeField] private float BackwardBrakeRate = 1f;
         [SerializeField] private float RotationRate = 2f;
         [SerializeField] private float MovementSpeed = 1f;
         [SerializeField] private float RotationSpeed = 1f;
@@ -25,7 +30,7 @@ namespace SnowballPlanet
         protected float orbitRadius = 1f;
         protected Vector3 previousPosition;
 
-        protected Vector2 velocity;
+        private Vector2 _velocity;
         private Vector2 _moveAmount;
         private float _lastVelocityY;
         private Vector3 _previousForward;
@@ -44,8 +49,9 @@ namespace SnowballPlanet
             {
                 _locked = value;
                 _moveAmount = value ? Vector2.zero : _moveAmount;
-                velocity = value ? Vector2.zero : velocity;
-                OnControllerMove.Invoke(velocity);
+                _velocity = value ? Vector2.zero : _velocity;
+
+                OnControllerMove.Invoke(_velocity);
             }
         }
 
@@ -58,6 +64,7 @@ namespace SnowballPlanet
         {
             _collisionMask = LayerMask.GetMask("Colliders");
             _rigidbody = GetComponent<Rigidbody>();
+            _previousForward = transform.forward;
             previousPosition = _rigidbody.position - transform.forward;
         }
 
@@ -65,74 +72,91 @@ namespace SnowballPlanet
         {
             if (_moveAmount.y > 0f)
             {
-                if (velocity.y < 0f)
-                    velocity.y += Time.fixedDeltaTime * AccelerationRate * 0.4f;
-                else
-                    velocity.y += Time.fixedDeltaTime * AccelerationRate;
+                if (Mathf.Abs(_velocity.y) < 0.01f)
+                    _velocity.y = MinVelocity;
 
-                velocity.y = Mathf.Clamp(velocity.y, -MaxVelocity, MaxVelocity);
+                if (_velocity.y > 0f)
+                    _velocity.y += Time.fixedDeltaTime * ForwardAccelerationRate;
+                else
+                    _velocity.y += Time.fixedDeltaTime * DecelerationRate * ForwardBrakeRate;
+
+                _velocity.y = Mathf.Clamp(_velocity.y, -MaxVelocity, MaxVelocity);
             }
             else if (_moveAmount.y < 0f)
             {
-                velocity.y -= Time.fixedDeltaTime * AccelerationRate * 0.2f;
-                velocity.y = Mathf.Clamp(velocity.y, -MaxVelocity, MaxVelocity);
+                if (Mathf.Abs(_velocity.y) < 0.01f)
+                    _velocity.y = -MinVelocity;
+
+                if (_velocity.y < 0f)
+                    _velocity.y -= Time.fixedDeltaTime * BackwardAccelerationRate;
+                else
+                    _velocity.y -= Time.fixedDeltaTime * DecelerationRate * BackwardBrakeRate;
+
+                _velocity.y = Mathf.Clamp(_velocity.y, -MaxVelocity, MaxVelocity);
             }
             else
             {
-                if (velocity.y < 0f)
-                    velocity.y += Time.fixedDeltaTime * DecelerationRate;
-                else if (velocity.y > 0f)
-                    velocity.y -= Time.fixedDeltaTime * DecelerationRate;
-
-                if (Mathf.Abs(velocity.y) < 0.001f)
-                    velocity.y = 0f;
+                if (_velocity.y < -0.01f)
+                    _velocity.y += Time.fixedDeltaTime * DecelerationRate;
+                else if (_velocity.y > 0.01f)
+                    _velocity.y -= Time.fixedDeltaTime * DecelerationRate;
+                else
+                    _velocity.y = 0f;
             }
 
             if (_moveAmount.x > 0f)
             {
-                velocity.x += Time.fixedDeltaTime * RotationRate;
-                velocity.x = Mathf.Clamp(velocity.x, 0f, MaxVelocity * Mathf.Abs(velocity.y));
+                if (Mathf.Abs(_velocity.x) < 0.01f)
+                    _velocity.x = MinAngularVelocity;
+
+                _velocity.x += Time.fixedDeltaTime * RotationRate;
+                _velocity.x = Mathf.Clamp(_velocity.x, 0f, MaxVelocity * Mathf.Abs(_velocity.y));
             }
             else if (_moveAmount.x < 0f)
             {
-                velocity.x -= Time.fixedDeltaTime * RotationRate;
-                velocity.x = Mathf.Clamp(velocity.x, -MaxVelocity * Mathf.Abs(velocity.y), 0f);
+                if (Mathf.Abs(_velocity.x) < 0.01f)
+                    _velocity.x = -MinAngularVelocity;
+
+                _velocity.x -= Time.fixedDeltaTime * RotationRate;
+                _velocity.x = Mathf.Clamp(_velocity.x, -MaxVelocity * Mathf.Abs(_velocity.y), 0f);
             }
             else
             {
-                if (velocity.x < 0f)
-                    velocity.x += Time.fixedDeltaTime * RotationRate;
-                else if (velocity.x > 0f)
-                    velocity.x -= Time.fixedDeltaTime * RotationRate;
-
-                if (Mathf.Abs(velocity.x) < 0.001f)
-                    velocity.x = 0f;
+                if (_velocity.x < -0.01f)
+                    _velocity.x += Time.fixedDeltaTime * RotationRate;
+                else if (_velocity.x > 0.01f)
+                    _velocity.x -= Time.fixedDeltaTime * RotationRate;
+                else
+                    _velocity.x = 0f;
             }
 
-            var upward = (transform.position - orbitCenter.position).normalized;
-            var forward = transform.forward;
+            var controllerPosition = _rigidbody.position;
+            var controllerTransform = transform;
+            var controllerScale = controllerTransform.localScale.x;
+            var controllerForward = controllerTransform.forward;
+            var controllerUpward = (controllerPosition - orbitCenter.position).normalized;
 
-            if (velocity.y > 0f)
+            if (_velocity.y > 0f)
             {
                 if (_alignCamera)
-                    forward = _previousForward;
+                    controllerForward = _previousForward;
                 else if (_lastVelocityY > 0f)
-                    forward = (_rigidbody.position - previousPosition).normalized;
+                    controllerForward = (_rigidbody.position - previousPosition).normalized;
 
                 _alignCamera = false;
-                _lastVelocityY = velocity.y;
+                _lastVelocityY = _velocity.y;
             }
-            else if (velocity.y < 0f)
+            else if (_velocity.y < 0f)
             {
                 if (_alignCamera)
-                    forward = _previousForward;
+                    controllerForward = _previousForward;
                 else if (_lastVelocityY < 0f)
-                    forward = (previousPosition - _rigidbody.position).normalized;
+                    controllerForward = (previousPosition - _rigidbody.position).normalized;
 
                 _alignCamera = false;
-                _lastVelocityY = velocity.y;
+                _lastVelocityY = _velocity.y;
             }
-            else if (Mathf.Abs(velocity.x) > 0f)
+            else if (Mathf.Abs(_velocity.x) > 0f)
             {
                 _alignCamera = true;
                 _lastVelocityY = 0;
@@ -140,17 +164,23 @@ namespace SnowballPlanet
             else
                 _lastVelocityY = 0;
 
-            forward = Quaternion.AngleAxis(velocity.x * Time.fixedDeltaTime * RotationSpeed, upward) * forward;
+            controllerForward = Quaternion.AngleAxis(_velocity.x * Time.fixedDeltaTime * RotationSpeed, controllerUpward) * controllerForward;
 
-            var bodyPosition = _rigidbody.position;
-            var bodyScale = transform.localScale.x;
-            var sphereRadius = bodyScale * 0.5f;
+            var speed = MovementSpeed * SpeedScaleAdjustment.Evaluate(Mathf.Min(controllerScale, 1f));
+            var desiredPosition = controllerPosition + controllerForward * (_velocity.y * Time.fixedDeltaTime * speed);
+            var desiredDirection = (desiredPosition - controllerPosition).normalized;
 
-            var speed = MovementSpeed * SpeedScaleAdjustment.Evaluate(Mathf.Min(bodyScale, 1f));
-            var desiredPosition = _rigidbody.position + forward * (velocity.y * Time.fixedDeltaTime * speed);
-            var desiredDirection = (desiredPosition - bodyPosition).normalized;
+            // Don't try to move the controller when it's going too slow
+            if (Mathf.Abs((desiredPosition - controllerPosition).magnitude) < 0.003f)
+            {
+                _previousForward = controllerTransform.forward;
+                _alignCamera = true;
+                OnControllerMove.Invoke(Vector2.zero);
 
-            var colliders = Physics.OverlapSphere(desiredPosition, sphereRadius, _collisionMask);
+                return;
+            }
+
+            var colliders = Physics.OverlapSphere(desiredPosition, controllerScale * 0.5f, _collisionMask);
 
             if (colliders.Length > 0)
             {
@@ -158,29 +188,29 @@ namespace SnowballPlanet
                 {
                     var item = collider.transform.GetComponentInParent<PickableItem>();
 
-                    if (item && transform.localScale.x >= item.PickSize * 0.5f)
+                    if (item && controllerTransform.localScale.x >= item.PickSize * 0.5f)
                         continue;
 
-                    var colliderDirection = (collider.transform.position - bodyPosition).normalized;
-                    var hits = Physics.RaycastAll(bodyPosition, colliderDirection, bodyScale, _collisionMask);
+                    var colliderDirection = (collider.transform.position - controllerPosition).normalized;
+                    var hits = Physics.RaycastAll(controllerPosition, colliderDirection, controllerScale, _collisionMask);
 
                     if (hits.Length < 1)
                         continue;
 
                     var hit = hits.First();
-                    var projectedNormal = Vector3.ProjectOnPlane(hit.normal, transform.up);
+                    var projectedNormal = Vector3.ProjectOnPlane(hit.normal, controllerTransform.up);
                     var repulsionNormal = ((projectedNormal.normalized + desiredDirection) * 0.5f).normalized;
-                    var constrainedPosition = hit.point + repulsionNormal * bodyScale;
-                    var newDirection = constrainedPosition - bodyPosition;
+                    var constrainedPosition = hit.point + repulsionNormal * controllerScale;
+                    var newDirection = constrainedPosition - controllerPosition;
 
-                    desiredPosition = bodyPosition + newDirection * (Mathf.Abs(velocity.y) * Time.fixedDeltaTime * speed * FrictionCorrection);
+                    desiredPosition = controllerPosition + newDirection * (Mathf.Abs(_velocity.y) * Time.fixedDeltaTime * speed * FrictionCorrection);
 
                     // Prevents the camera to turn
                     _lastVelocityY = 0;
 
-                    var projectedForward = Vector3.ProjectOnPlane(forward, desiredPosition - orbitCenter.position);
+                    var projectedForward = Vector3.ProjectOnPlane(controllerForward, desiredPosition - orbitCenter.position);
 
-                    forward = Quaternion.AngleAxis(velocity.x * Time.fixedDeltaTime * RotationSpeed, upward) * projectedForward.normalized;
+                    controllerForward = Quaternion.AngleAxis(_velocity.x * Time.fixedDeltaTime * RotationSpeed, controllerUpward) * projectedForward.normalized;
 
                     break;
                 }
@@ -188,10 +218,10 @@ namespace SnowballPlanet
 
             CartesianToSpherical(desiredPosition, out var radius, out var polar, out var elevation);
             SphericalToCartesian(orbitRadius, polar, elevation, out var cartesianCoordinates);
-            OnControllerMove.Invoke(velocity);
+            OnControllerMove.Invoke(_velocity);
 
-            _rigidbody.Move(cartesianCoordinates, Quaternion.LookRotation(forward, upward));
-            _previousForward = transform.forward;
+            _rigidbody.Move(cartesianCoordinates, Quaternion.LookRotation(controllerForward, controllerUpward));
+            _previousForward = controllerTransform.forward;
             previousPosition = _rigidbody.position;
         }
         #endregion UnityEvents

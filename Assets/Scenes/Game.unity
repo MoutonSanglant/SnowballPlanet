@@ -5329,7 +5329,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 2083924752}
-  - {fileID: 920500634}
+  - {fileID: 1957617470}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 63.257, z: 0}
 --- !u!114 &503661192
@@ -5466,12 +5466,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9b1b473ce6e41b6fa74948e835b3485, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxVelocity: 1
-  AccelerationRate: 6
+  MaxVelocity: 1.3
+  MinVelocity: 0.32
+  MinAngularVelocity: 0.14
+  ForwardAccelerationRate: 1
+  BackwardAccelerationRate: 0.7
   DecelerationRate: 1.2
+  ForwardBrakeRate: 1.4
+  BackwardBrakeRate: 1.2
   RotationRate: 2
-  MovementSpeed: 4
-  RotationSpeed: 90
+  MovementSpeed: 2
+  RotationSpeed: 40
   SpeedScaleAdjustment:
     serializedVersion: 2
     m_Curve:
@@ -5498,7 +5503,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   FrictionCorrection: 0.5
   TargetPlanet: {fileID: 674669195}
-  GrowthSpeed: 0.8
+  GrowthSpeed: 3
   VictoryText: {fileID: 1080752570}
   VictoryAnimationCurve:
     serializedVersion: 2

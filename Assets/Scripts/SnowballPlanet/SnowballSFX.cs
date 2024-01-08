@@ -46,8 +46,6 @@ namespace SnowballPlanet
                 }
                 else
                 {
-                    _nextNoteTimestamp = Time.time + TimeWindowBetweenNotes;
-
                     _partitionReader.MoveNext();
 
                     if (_partitionReader.Current == null)
@@ -55,13 +53,16 @@ namespace SnowballPlanet
                         _partitionReader = _partition.PlaySingleNote(true);
                         _partitionReader.MoveNext();
                     }
+
+                    _nextNoteTimestamp = Time.time + TimeWindowBetweenNotes;
                 }
             }
             else
             {
-                _nextNoteTimestamp = Time.time + TimeWindowBetweenNotes;
-                _partitionReader = _partition.PlaySingleNote(true);
+                _partitionReader = _partition.PlaySingleNote(true, _nextNoteTimestamp > 0.01f);
                 _partitionReader.MoveNext();
+
+                _nextNoteTimestamp = Time.time + TimeWindowBetweenNotes;
             }
         }
 
@@ -116,19 +117,27 @@ namespace SnowballPlanet
 
             public Partition(AudioSource source, AudioClip blankSfx) => (_source, _blankSfx) = (source, blankSfx);
 
-            public IEnumerator PlaySingleNote(bool playMutedNotes = false)
+            public IEnumerator PlaySingleNote(bool playMutedNotes = false, bool failed = false)
             {
                 var reader = new Note[_notes.Length];
 
                 Array.Copy(_notes, reader, _notes.Length);
 
+                if (failed)
+                {
+                    _source.volume = 0.42f;
+                    _source.PlayOneShot(_blankSfx);
+
+                    yield return reader;
+                }
+
                 foreach (var note in reader)
                 {
                     if (note == Note.Z)
                     {
-                        if (!playMutedNotes)
+                        if (playMutedNotes)
                         {
-                            _source.volume = 0.4f;
+                            _source.volume = 0.14f;
                             _source.PlayOneShot(_blankSfx);
                         }
                     }
@@ -139,7 +148,6 @@ namespace SnowballPlanet
                         _source.pitch = NoteToPitch(note);
                         _source.Play();
                     }
-
 
                     yield return reader;
                 }

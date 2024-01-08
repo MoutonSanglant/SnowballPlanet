@@ -153,8 +153,8 @@ namespace SnowballPlanet
 
             if (item.IsGoal)
                 StartCoroutine(DisplayVictoryAndStartLoadCredits());
-
-            OnItemPickup.Invoke(item);
+            else
+                OnItemPickup.Invoke(item);
         }
 
         #region PhysicEvents

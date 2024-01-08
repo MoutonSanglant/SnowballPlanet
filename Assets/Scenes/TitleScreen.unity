@@ -249,6 +249,8 @@ MonoBehaviour:
   Credits:
     asset: {fileID: 102900000, guid: 45627a939b646d442974f26375a5624f, type: 3}
     guid: 45627a939b646d442974f26375a5624f
+  Preload: 1
+  PreloadDuration: 1.8
 --- !u!82 &65586694
 AudioSource:
   m_ObjectHideFlags: 0
@@ -530,7 +532,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &385703694
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1342,7 +1344,7 @@ RectTransform:
   m_GameObject: {fileID: 1304511867}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2.5, y: 2.5, z: 1}
+  m_LocalScale: {x: 0, y: 0, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 385703694}

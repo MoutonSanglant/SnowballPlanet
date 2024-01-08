@@ -13,23 +13,38 @@ namespace SnowballPlanet
         [SerializeField] private SceneReference Title;
         [SerializeField] private SceneReference Game;
         [SerializeField] private SceneReference Credits;
+        [SerializeField] private bool Preload;
+        [SerializeField] private float PreloadDuration;
 
-        private static SceneTransitionManager _instance;
+        private static readonly int PreloadAnimatorParameter = Animator.StringToHash("Preload");
+        private static readonly int FadeInAnimatorParameter = Animator.StringToHash("FadeIn");
+        private static readonly int FadeOutAnimatorParameter = Animator.StringToHash("FadeOut");
         private static readonly int SpeedAnimatorParameter = Animator.StringToHash("Speed");
+        private static SceneTransitionManager _instance;
 
         private AudioSource _audioSource;
+        private Animator _animator;
 
         private void Awake()
         {
             _instance = this;
             _audioSource = GetComponent<AudioSource>();
+            _animator = ScreenTransition.GetComponent<Animator>();
+
+            DontDestroyOnLoad(gameObject);
+        }
+
+        private IEnumerator Start()
+        {
+            if (Preload)
+                yield return new WaitForSeconds(PreloadDuration);
 
             SceneManager.sceneLoaded += (_, _) =>
             {
                 StartCoroutine(Fade(-1f, Scene.None));
             };
 
-            DontDestroyOnLoad(gameObject);
+            yield return Fade(-1f, Scene.None);
         }
 
         public static void LoadScene(Scene scene)
@@ -39,12 +54,13 @@ namespace SnowballPlanet
 
         private IEnumerator Fade(float speed, Scene scene)
         {
-            _audioSource.Play();
-
             ScreenTransition.gameObject.SetActive(true);
-            ScreenTransition.GetComponent<Animator>().SetFloat(SpeedAnimatorParameter, speed);
 
-            var animationState = ScreenTransition.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0);
+            _audioSource.Play();
+            _animator.Play(FadeInAnimatorParameter, 0, speed > 0 ? 0f : 1f);
+            _animator.SetFloat(SpeedAnimatorParameter, speed);
+
+            var animationState = _animator.GetCurrentAnimatorStateInfo(0);
             var animationLength = animationState.length;
 
             yield return new WaitForSeconds(animationLength);

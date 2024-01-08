@@ -153,9 +153,13 @@ namespace SnowballPlanet
             }
 
             if (item.IsGoal)
+            {
+                GetComponent<SphereCollider>().enabled = false;
                 StartCoroutine(DisplayVictoryAndStartLoadCredits());
+            }
             else
                 OnItemPickup.Invoke(item);
+
         }
 
         #region PhysicEvents

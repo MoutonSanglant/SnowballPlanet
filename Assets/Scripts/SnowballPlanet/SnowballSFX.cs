@@ -8,7 +8,8 @@ namespace SnowballPlanet
     [RequireComponent(typeof(AudioSource))]
     public class SnowballSFX : MonoBehaviour
     {
-        [SerializeField] private float TimeWindowBetweenNotes = 1f;
+        [SerializeField] private float TimeWindowDuration = 1f;
+        [SerializeField] private float MuteWindow = 0f;
         [SerializeField] private float TimeBetweenNotes = 0.6f;
         [SerializeField] private AudioSource SFXAudioSource;
         [SerializeField] private AudioSource SoundTrackAudioSource;
@@ -48,7 +49,7 @@ namespace SnowballPlanet
         {
             if (Time.time < _nextNoteTimestamp)
             {
-                if (Time.time < _nextNoteTimestamp - TimeWindowBetweenNotes * 0.8f)
+                if (Time.time < _nextNoteTimestamp - TimeWindowDuration + MuteWindow)
                 {
                     // Don't play any sound when last sound has been played recently
                 }
@@ -62,7 +63,7 @@ namespace SnowballPlanet
                         _partitionReader.MoveNext();
                     }
 
-                    _nextNoteTimestamp = Time.time + TimeWindowBetweenNotes;
+                    _nextNoteTimestamp = Time.time + TimeWindowDuration;
                 }
             }
             else
@@ -70,7 +71,7 @@ namespace SnowballPlanet
                 _partitionReader = _partition.PlaySingleNote(true, _nextNoteTimestamp > 0.01f);
                 _partitionReader.MoveNext();
 
-                _nextNoteTimestamp = Time.time + TimeWindowBetweenNotes;
+                _nextNoteTimestamp = Time.time + TimeWindowDuration;
             }
         }
 

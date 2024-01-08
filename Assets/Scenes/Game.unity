@@ -8074,7 +8074,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12258a51b6c2e8743a9188612d85c0ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TimeWindowBetweenNotes: 1.8
+  TimeWindowDuration: 2
+  MuteWindow: 0.24
   TimeBetweenNotes: 0.3
   SFXAudioSource: {fileID: 503661196}
   SoundTrackAudioSource: {fileID: 503661198}

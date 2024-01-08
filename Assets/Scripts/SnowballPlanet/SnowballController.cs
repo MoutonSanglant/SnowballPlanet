@@ -115,6 +115,7 @@ namespace SnowballPlanet
             Locked = true;
 
             var elapsed = 0f;
+            VictoryText.gameObject.SetActive(true);
 
             while (elapsed < VictoryApparitionDuration)
             {

@@ -21,7 +21,7 @@ PrefabInstance:
     - target: {fileID: 1381955529372414135, guid: 9ae1dbcf076a5dbb492043f3762e4ccf,
         type: 3}
       propertyPath: <GrowthAmount>k__BackingField
-      value: 0.3
+      value: 0.21
       objectReference: {fileID: 0}
     - target: {fileID: 3181373442980663981, guid: 9ae1dbcf076a5dbb492043f3762e4ccf,
         type: 3}

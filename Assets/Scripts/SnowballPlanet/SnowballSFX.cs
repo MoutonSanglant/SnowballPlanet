@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SnowballPlanet
 {
@@ -9,7 +10,10 @@ namespace SnowballPlanet
     {
         [SerializeField] private float TimeWindowBetweenNotes = 1f;
         [SerializeField] private float TimeBetweenNotes = 0.6f;
+        [SerializeField] private AudioSource SFXAudioSource;
+        [SerializeField] private AudioSource SoundTrackAudioSource;
         [SerializeField] private AudioClip BlankSFX;
+        [SerializeField] private AudioClip NoteSFX;
 
         // Notes
         private float _nextNoteTimestamp;
@@ -18,12 +22,16 @@ namespace SnowballPlanet
 
         private void Awake()
         {
+            _partition = new Partition(SoundTrackAudioSource, NoteSFX, BlankSFX);
+
             var snowballController = GetComponent<SnowballController>();
 
             snowballController.OnItemPickup += PlaySound;
             SnowballController.OnVictory += PlayFullPartition;
-
-            _partition = new Partition(GetComponent<AudioSource>(), BlankSFX);
+            snowballController.OnControllerMove += moveAmount =>
+            {
+                SFXAudioSource.volume = Mathf.Clamp01(moveAmount.magnitude);
+            };
         }
 
         private void OnDestroy()
@@ -113,9 +121,10 @@ namespace SnowballPlanet
             };
 
             private AudioSource _source;
+            private AudioClip _noteSfx;
             private AudioClip _blankSfx;
 
-            public Partition(AudioSource source, AudioClip blankSfx) => (_source, _blankSfx) = (source, blankSfx);
+            public Partition(AudioSource source, AudioClip noteSfx, AudioClip blankSfx) => (_source, _noteSfx, _blankSfx) = (source, noteSfx, blankSfx);
 
             public IEnumerator PlaySingleNote(bool playMutedNotes = false, bool failed = false)
             {
@@ -144,9 +153,8 @@ namespace SnowballPlanet
                     else
                     {
                         _source.volume = 1f;
-                        _source.Stop();
                         _source.pitch = NoteToPitch(note);
-                        _source.Play();
+                        _source.PlayOneShot(_noteSfx);
                     }
 
                     yield return reader;

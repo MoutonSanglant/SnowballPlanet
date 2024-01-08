@@ -16,6 +16,7 @@ namespace SnowballPlanet
         [SerializeField] private float VictoryDisplayDuration = 3f;
 
         public static Action OnVictory = () => {};
+        public Action<PickableItem> OnItemPickup = (_) => {};
         public Action<float> OnSnowballGrow;
 
         private bool _startGrow;
@@ -36,6 +37,7 @@ namespace SnowballPlanet
         private Vector3 _lastCameraRotationOffset;
         private float _lastOrbitRadiusOffset;
 
+        // Cache
         private Transform _snowballRollTransform;
         private ParentConstraint _mainCameraConstraint;
 
@@ -117,7 +119,6 @@ namespace SnowballPlanet
             while (elapsed < VictoryApparitionDuration)
             {
                 elapsed += Time.deltaTime;
-
                 VictoryText.transform.localScale = Vector3.one * VictoryAnimationCurve.Evaluate(elapsed / VictoryApparitionDuration);
 
                 yield return null;
@@ -152,6 +153,8 @@ namespace SnowballPlanet
 
             if (item.IsGoal)
                 StartCoroutine(DisplayVictoryAndStartLoadCredits());
+
+            OnItemPickup.Invoke(item);
         }
 
         #region PhysicEvents

@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 namespace SnowballPlanet
 {
+    [RequireComponent(typeof(AudioSource))]
     public class SceneTransitionManager : MonoBehaviour
     {
         [SerializeField] private Transform ScreenTransition;
@@ -16,9 +17,12 @@ namespace SnowballPlanet
         private static SceneTransitionManager _instance;
         private static readonly int SpeedAnimatorParameter = Animator.StringToHash("Speed");
 
+        private AudioSource _audioSource;
+
         private void Awake()
         {
             _instance = this;
+            _audioSource = GetComponent<AudioSource>();
 
             SceneManager.sceneLoaded += (_, _) =>
             {
@@ -35,6 +39,8 @@ namespace SnowballPlanet
 
         private IEnumerator Fade(float speed, Scene scene)
         {
+            _audioSource.Play();
+
             ScreenTransition.gameObject.SetActive(true);
             ScreenTransition.GetComponent<Animator>().SetFloat(SpeedAnimatorParameter, speed);
 
